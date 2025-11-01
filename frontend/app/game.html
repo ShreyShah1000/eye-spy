@@ -46,7 +46,12 @@
     <div class="floating" id="video-layout">
         <div class="panel" id="video-panel">
             <button class="close normal" onclick="toggleFloating('video-layout', 'video-panel')"><i class="material-symbols-rounded">close</i></button>
-            <video id="video" autoplay></video>
+            <div class="panel wide">
+                <div class="loading"></div>
+            </div>
+            <video id="video" autoplay>
+                <div class="loading"></div>
+            </video>
             <button id="snap">Capture & Send</button>
             <canvas id="canvas"></canvas>
         </div>
