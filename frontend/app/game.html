@@ -77,21 +77,13 @@
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
             const dataURL = canvas.toDataURL('image/jpeg') // base64 JPEG
 
-            var response;
-
-            fetch('http://127.0.0.1:8080/processImage', {
+            fetch('http://127.0.0.1:5500/processImage', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ image: dataURL })
             })
             .then(res => res.text())
-            .then(msg => {
-                response = msg;
-                console.log(response);
-                if (response != null) {
-                    console.log("hello");
-                }
-            }).catch(console.error)
+            .catch(console.error)
         });
     </script>
 </body>
