@@ -239,16 +239,17 @@ button.normal, .button.normal{
 }
 
 .loading{
-    left:50%;
-    transform: translateX(-50%);
-
     width: 40px;
     height:40px;
 
-    border:10px solid var(--p1);
+    border:8px solid var(--p1);
+    border-bottom-color: var(--bg1);
+
     border-radius: 99px;
 
-    position:absolute;
+    animation: load .5s linear infinite;
+
+    margin-block:60px;
 
     z-index: 3;
 }
@@ -303,5 +304,15 @@ button.normal, .button.normal{
 
     to{
         opacity: 0;
+    }
+}
+
+@keyframes load {
+    from{
+        transform:rotateZ(0);
+    }
+
+    to{
+        transform:rotateZ(360deg);
     }
 }

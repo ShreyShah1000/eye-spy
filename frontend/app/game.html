@@ -46,11 +46,10 @@
     <div class="floating" id="video-layout">
         <div class="panel" id="video-panel">
             <button class="close normal" onclick="toggleFloating('video-layout', 'video-panel')"><i class="material-symbols-rounded">close</i></button>
-            <div class="panel wide">
-                <div class="loading"></div>
-            </div>
+            
+            <div class="loading"></div>
+    
             <video id="video" autoplay>
-                <div class="loading"></div>
             </video>
             <button id="snap">Capture & Send</button>
             <canvas id="canvas"></canvas>
@@ -65,7 +64,10 @@
 
         // get webcam stream
         navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => { video.srcObject = stream; })
+            .then(stream => {
+                video.srcObject = stream
+                $(".loading").hide()
+            })
             .catch(err => console.error("Camera access denied:", err))
 
         // capture a frame and send to backend
@@ -73,10 +75,10 @@
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
             const dataURL = canvas.toDataURL('image/jpeg') // base64 JPEG
 
-            fetch('/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: dataURL })
+            fetch('http://127.0.0.1:8080/processImage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: dataURL })
             })
             .then(res => res.text())
             .then(msg => console.log('Server response:', msg))
