@@ -9,6 +9,11 @@
     --bg4: rgb(189, 189, 189);
     --bg5: rgb(175, 175, 175);
 
+    --bgt1: rgba(255,255,255,0.9);
+    --bgt2: rgba(255,255,255,0.7);
+    --bgt3: rgba(255,255,255,0.5);
+    --bgt4: rgba(255,255,255,0.3);
+
 
     --p1: rgb(35, 30, 77);
     --p2: rgb(67, 54, 123);
@@ -24,7 +29,7 @@ body{
     font-family: var(--f-h);
 
     margin:0;
-    margin-left:200px;
+    margin-left:240px;
 }
 
 h1{
@@ -91,6 +96,8 @@ button, .button{
 
     text-decoration: none;
 
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.03);
+
     transition: var(--tr);
 }
 
@@ -130,7 +137,7 @@ button:active, .button:active{
     display: flex;
     flex-direction: column;
 
-    border-right: 2px solid var(--bg4);
+    border-right: 2px solid var(--bg3);
 
     position:fixed;
     left:0;
@@ -138,7 +145,10 @@ button:active, .button:active{
     height:100%;
     width: 200px;
 
-    z-index: 9999;
+    z-index: 2;
+
+    backdrop-filter: blur(10px);
+    background-color: var(--bgt3);
 
     padding: 15px;
 }
@@ -157,8 +167,38 @@ button:active, .button:active{
     border-radius: var(--br);
 }
 
+.navbar > a:active{
+    scale:0.96;
+}
+
 .navbar > a:hover{
-    background-color: var(--bg2);
+    background-color: rgba(0,0,0,0.06);
  
     transition: var(--tr2);
+}
+
+
+
+
+
+
+
+
+
+
+
+.floating{
+    position:fixed;
+
+    background-color: rgba(0,0,0,0.8);
+
+    z-index: 10;
+    inset:0;
+}
+
+.panel{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }

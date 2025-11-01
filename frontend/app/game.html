@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head id="shared-head">
+    
+</head>
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        fetch('../templates/head.html')
+            .then(resp => resp.text())
+            .then(html => {
+                document.getElementById('shared-head').innerHTML = html
+        });
+
+        window.addEventListener('load', () => {
+            document.title = "Welcome"
+        });
+    </script>
+    <script src="/src/js/navbar.js"></script>
+
+    <div class="navbar">
+    </div>
+
+
+    <div class="floating">
+      <div class="game-layout">
+        <video id="video" autoplay></video>
+        <button id="snap">Capture & Send</button>
+        <canvas id="canvas"></canvas>
+      </div>
+    </div>
+
+    <script>
+      const video = document.getElementById('video')
+      const canvas = document.getElementById('canvas')
+      const snap = document.getElementById('snap')
+      const ctx = canvas.getContext('2d')
+
+      // get webcam stream
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => { video.srcObject = stream; })
+        .catch(err => console.error("Camera access denied:", err))
+
+      // capture a frame and send to backend
+      snap.addEventListener('click', () => {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+        const dataURL = canvas.toDataURL('image/jpeg') // base64 JPEG
+
+        fetch('/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: dataURL })
+        })
+        .then(res => res.text())
+        .then(msg => console.log('Server response:', msg))
+        .catch(console.error)
+      });
+    </script>
+</body>
+</html>
