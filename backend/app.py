@@ -19,11 +19,14 @@ example_image = "https://cdn.pixabay.com/photo/2018/01/14/23/12/nature-3082832_1
 
 @app.route("/processImage", methods=["POST"])
 def processImage():
-    image = request.files["file"]
-    image_b64 = base64.b64encode(image.read()).decode("utf-8")
-    image_data_url = f"data:image/jpeg;base64,{image_b64}"
+    data = request.get_json()
+    image_url = data.get("image")
+
+    # image = request.files["file"]
+    # image_b64 = base64.b64encode(image.read()).decode("utf-8")
+    # image_data_url = f"data:image/jpeg;base64,{image_b64}"
     
-    if not image:
+    if not image_url:
         return jsonify({"error": "No image received"}), 400
 
     messages = [
@@ -33,7 +36,7 @@ def processImage():
                 # first send your text question/prompt
                 {"type": "text", "text": "Treat this image as an eye spy game. Your job is to choose an object from the image. Difficulty is hard. Respond with two parts: 1) An 'I spy' riddle (start with 'I spy something...'), and 2) The answer. Format your response clearly with 'Riddle:' and 'Answer:' labels."},
                 # then the image
-                {"type": "image_url", "image_url": {"url": image_data_url}}
+                {"type": "image_url", "image_url": {"url": image_url}}
             ]
         }
     ]
