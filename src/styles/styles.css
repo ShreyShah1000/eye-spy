@@ -1,17 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 :root{
-    --f-h: 'Inter', sans-serif;
+    --f-h: 'DM Sans', sans-serif;
 
     --bg1: rgb(255, 255, 255);
     --bg2: rgb(234, 234, 234);
     --bg3: rgb(213, 213, 213);
     --bg4: rgb(189, 189, 189);
     --bg5: rgb(175, 175, 175);
+
+
+    --p1: rgb(35, 30, 77);
+    --p2: rgb(67, 54, 123);
+    --p3: rgb(123, 75, 163);
+
+    --br:7px;
+
+    --tr: 0.2s cubic-bezier(0, 0, 0.03, 1);
+    --tr2: 0.2s linear;
 }
 
 body{
     font-family: var(--f-h);
+
+    margin:0;
+    margin-left:200px;
 }
 
 h1{
@@ -19,9 +32,17 @@ h1{
 
     font-size:50px;
     font-weight: 700;
-
-    
 }
+
+h1, h2, h3, h4, h5, h, p, li, label{
+    margin-block:10px;
+}
+
+p{
+    font-size: 17px;
+}
+
+
 
 
 
@@ -36,4 +57,108 @@ h1{
     gap:10px;
 
     justify-content: center;
+    align-items: center;
+
+    margin-block:90px;
+}
+
+.section p{
+    text-align: center;
+}
+
+
+
+
+
+
+button, .button{
+    background-color: var(--p1);
+    color:var(--bg1);
+
+    padding: 15px 18px;
+
+    border-radius: var(--br);
+    border:none;
+    
+    font-family: var(--f-h);
+    font-size:16px;
+    font-weight: 580;
+
+    cursor: pointer;
+ 
+    width: fit-content;
+    height: fit-content;
+
+    text-decoration: none;
+
+    transition: var(--tr);
+}
+
+button:hover, .button:hover{
+    opacity: 0.8;
+
+    transition: var(--tr);
+}
+
+button:active, .button:active{
+    scale:0.97;
+}
+
+.btn-group{
+    display: flex;
+    gap:5px;
+}
+
+
+
+
+
+
+.material-symbols-rounded{
+    vertical-align: middle;
+    transform: translateY(-10%);
+    font-size: inherit;
+}
+
+
+
+
+
+
+
+.navbar{
+    display: flex;
+    flex-direction: column;
+
+    border-right: 2px solid var(--bg4);
+
+    position:fixed;
+    left:0;
+    top:0;
+    height:100%;
+    width: 200px;
+
+    z-index: 9999;
+
+    padding: 15px;
+}
+
+.navbar > a{
+    text-decoration: none;
+
+    font-size:18px;
+    font-weight: 550;
+
+    color:var(--p1);
+
+    transition: var(--tr2);
+
+    padding: 10px;
+    border-radius: var(--br);
+}
+
+.navbar > a:hover{
+    background-color: var(--bg2);
+ 
+    transition: var(--tr2);
 }
