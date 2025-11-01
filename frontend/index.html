@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head id="shared-head">
+    
+</head>
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        fetch('templates/head.html')
+            .then(resp => resp.text())
+            .then(html => {
+                document.getElementById('shared-head').innerHTML = html
+        });
+
+        window.addEventListener('load', () => {
+            document.title = "Welcome"
+        });
+    </script>
+
+    <h1>Hello</h1>
+    <div class="section">
+        <p>hello</p>
+    </div>
+</body>
+</html>
