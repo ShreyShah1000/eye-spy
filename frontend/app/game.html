@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head id="shared-head">
-    
+    <link rel="stylesheet" href="/src/styles/styles.css">
 </head>
 <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -9,7 +9,7 @@
         fetch('../templates/head.html')
             .then(resp => resp.text())
             .then(html => {
-                document.getElementById('shared-head').innerHTML = html
+                document.getElementById('shared-head').innerHTML += html
         })
 
         function toggle(id){
@@ -39,12 +39,14 @@
     <div class="navbar">
     </div>
 
-    <div class="panel">
+    <div class="panel wide center">
+        <h1>Get Ready!</h1>
+        <p>When you're ready, start the game!</p>
         <button onclick="toggleFloating('video-layout', 'video-panel')">Start Game</button>
     </div>
 
-    <div class="floating" id="video-layout">
-        <div class="panel" id="video-panel">
+    <div class="floating" id="video-layout" style="display: none;">
+        <div class="panel" id="video-panel" style="display: none;">
             <button class="close normal" onclick="toggleFloating('video-layout', 'video-panel')"><i class="material-symbols-rounded">close</i></button>
             
             <div class="loading"></div>

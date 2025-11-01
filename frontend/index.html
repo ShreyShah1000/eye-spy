@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head id="shared-head">
-    
+    <link rel="stylesheet" href="/src/styles/styles.css">
 </head>
 <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -9,7 +9,7 @@
         fetch('templates/head.html')
             .then(resp => resp.text())
             .then(html => {
-                document.getElementById('shared-head').innerHTML = html
+                document.getElementById('shared-head').innerHTML += html
         });
 
         window.addEventListener('load', () => {
@@ -26,7 +26,7 @@
         <p>Default subtitle</p>
 
         <div class="btn-group">
-            <a href="" class="button">Play a Game</a>
+            <a href="/frontend/app/game.html" class="button">Play a Game</a>
         </div>
     </div>
 </body>

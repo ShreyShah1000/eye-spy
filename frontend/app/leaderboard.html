@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head id="shared-head">
+    <link rel="stylesheet" href="/src/styles/styles.css">
+</head>
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        fetch('../templates/head.html')
+            .then(resp => resp.text())
+            .then(html => {
+                document.getElementById('shared-head').innerHTML += html
+        })
+
+        function toggle(id){
+            const x = $("#" + id)
+            if(x.is(":visible")){
+                x.addClass("c")
+                setTimeout(() => {
+                    x.removeClass("c")
+                    x.hide()
+                }, 300)
+            } else {
+                x.addClass("o")
+                x.show();
+                setTimeout(() => {
+                    x.removeClass("o")
+                }, 300)
+            }
+        }
+
+        function toggleFloating(id1, id2){
+            toggle(id1)
+            toggle(id2)
+        }
+    </script>
+    <script src="/src/js/navbar.js"></script>
+
+    <div class="navbar">
+    </div>
+
+    <div class="panel">
+        <h1>Leaderboard</h1>
+    </div>
+</body>
+</html>
