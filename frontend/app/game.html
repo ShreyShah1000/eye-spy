@@ -85,12 +85,13 @@
                 body: JSON.stringify({ image: dataURL })
             })
             .then(res => res.text())
-            .then(msg => response = msg)
-            .catch(console.error)
-
-            if(response != null){
-                console.log("hello");
-            }
+            .then(msg => {
+                response = msg;
+                console.log(response);
+                if (response != null) {
+                    console.log("hello");
+                }
+            }).catch(console.error)
         });
     </script>
 </body>
