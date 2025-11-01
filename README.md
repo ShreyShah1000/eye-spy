@@ -9,3 +9,7 @@ Lookit is an interactive learning app that revolutionizes
     b. AI recognition
     c. UI/UX
     d. "Game loop" functionality
+
+### BUZZWORDS
+
+"Open-source"
