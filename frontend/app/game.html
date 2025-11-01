@@ -48,13 +48,19 @@
     <div class="floating" id="video-layout" style="display: none;">
         <div class="panel" id="video-panel" style="display: none;">
             <button class="close normal" onclick="toggleFloating('video-layout', 'video-panel')"><i class="material-symbols-rounded">close</i></button>
-            
-            <div class="loading"></div>
-    
-            <video id="video" autoplay>
-            </video>
-            <button id="snap">Capture & Send</button>
-            <canvas id="canvas"></canvas>
+
+            <div class="panel" id="game">
+                <canvas id="canvas"></canvas>
+            </div>
+
+            <div class="panel" id="camera">
+                <div class="loading"></div>
+        
+                <video id="video" autoplay>
+                </video>
+
+                <button id="snap"><i class="material-symbols-rounded">photo_camera</i> Capture</button>
+            </div>
         </div>
     </div>
 
@@ -63,6 +69,8 @@
         const canvas = document.getElementById('canvas')
         const snap = document.getElementById('snap')
         const ctx = canvas.getContext('2d')
+
+        $("#game").hide();
 
         // get webcam stream
         navigator.mediaDevices.getUserMedia({ video: true })
@@ -77,13 +85,25 @@
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
             const dataURL = canvas.toDataURL('image/jpeg') // base64 JPEG
 
-            fetch('http://127.0.0.1:5500/processImage', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: dataURL })
-            })
-            .then(res => res.text())
-            .catch(console.error)
+            var response = "hi";
+
+            // fetch('http://127.0.0.1:5500/processImage', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ image: dataURL })
+            // })
+            // .then(res => res.text())
+            // .then(text => {
+            //     var response = text
+            // })
+            // .catch(console.error)
+
+            if(response != ""){
+                $("#canvas").addClass("o");
+
+                $("#video").hide();
+                $("#game").show();
+            }
         });
     </script>
 </body>

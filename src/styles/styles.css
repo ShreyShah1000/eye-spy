@@ -285,7 +285,7 @@ button.normal, .button.normal{
     transform: none;
 }
 
-.panel.c{
+.c{
     animation: close var(--tr3) forwards;
 }
 
@@ -294,12 +294,29 @@ button.normal, .button.normal{
 }
 
 
-.panel.o{
+.o{
     animation: close var(--tr3) reverse forwards;
+}
+
+.o-tr3{
+    animation: close var(--tr) reverse forwards;
 }
 
 .floating.o{
     animation: close2 var(--tr3) reverse forwards;
+}
+
+#canvas{
+    object-fit: cover;
+
+    width: min(400px, 100%);
+    height:300px;
+
+    object-fit: fill;
+
+    border-radius: var(--br);
+
+    box-shadow: var(--s);
 }
 
 @keyframes close{
