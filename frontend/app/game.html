@@ -10,51 +10,73 @@
             .then(resp => resp.text())
             .then(html => {
                 document.getElementById('shared-head').innerHTML = html
-        });
+        })
 
-        window.addEventListener('load', () => {
-            document.title = "Welcome"
-        });
+        function toggle(id){
+            const x = $("#" + id)
+            if(x.is(":visible")){
+                x.addClass("c")
+                setTimeout(() => {
+                    x.removeClass("c")
+                    x.hide()
+                }, 300)
+            } else {
+                x.addClass("o")
+                x.show();
+                setTimeout(() => {
+                    x.removeClass("o")
+                }, 300)
+            }
+        }
+
+        function toggleFloating(id1, id2){
+            toggle(id1)
+            toggle(id2)
+        }
     </script>
     <script src="/src/js/navbar.js"></script>
 
     <div class="navbar">
     </div>
 
+    <div class="panel">
+        <button onclick="toggleFloating('video-layout', 'video-panel')">Start Game</button>
+    </div>
 
-    <div class="floating">
-      <div class="game-layout">
-        <video id="video" autoplay></video>
-        <button id="snap">Capture & Send</button>
-        <canvas id="canvas"></canvas>
-      </div>
+    <div class="floating" id="video-layout">
+        <div class="panel" id="video-panel">
+            <button class="close normal" onclick="toggleFloating('video-layout', 'video-panel')"><i class="material-symbols-rounded">close</i></button>
+            <video id="video" autoplay></video>
+            <button id="snap">Capture & Send</button>
+            <canvas id="canvas"></canvas>
+        </div>
     </div>
 
     <script>
-      const video = document.getElementById('video')
-      const canvas = document.getElementById('canvas')
-      const snap = document.getElementById('snap')
-      const ctx = canvas.getContext('2d')
+        const video = document.getElementById('video')
+        const canvas = document.getElementById('canvas')
+        const snap = document.getElementById('snap')
+        const ctx = canvas.getContext('2d')
 
-      // get webcam stream
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => { video.srcObject = stream; })
-        .catch(err => console.error("Camera access denied:", err))
+        // get webcam stream
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => console.error("Camera access denied:", err))
 
-      // capture a frame and send to backend
-      snap.addEventListener('click', () => {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-        const dataURL = canvas.toDataURL('image/jpeg') // base64 JPEG
+        // capture a frame and send to backend
+        snap.addEventListener('click', () => {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+            const dataURL = canvas.toDataURL('image/jpeg') // base64 JPEG
 
-        fetch('/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: dataURL })
-        })
-        .then(res => res.text())
-        .then(msg => console.log('Server response:', msg))
-        .catch(console.error)
-      });
+            fetch('/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: dataURL })
+            })
+            .then(res => res.text())
+            .then(msg => console.log('Server response:', msg))
+            .catch(console.error)
+        });
     </script>
 </body>
 </html>
