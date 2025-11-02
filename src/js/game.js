@@ -85,14 +85,16 @@ snap.addEventListener('click', () => {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
     const dataURL = canvas.toDataURL('image/jpeg') // base64 JPEG
 
-    fetch('http://127.0.0.1:5000/processImage', {
+    var response;
+
+    fetch('http://127.0.0.1:5500/processImage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: dataURL })
     })
     .then(res => res.text())
     .then(text => {
-        var response = text
+        response = text
     })
     .catch(console.error)
 

@@ -17,8 +17,8 @@
 
 
     --p1: rgb(35, 30, 77);
-    --p2: rgb(67, 54, 123);
-    --p3: rgb(116, 39, 180);
+    --p2: rgb(67, 61, 91);
+    --p3: rgb(88, 74, 103);
     --p4: rgb(223, 194, 247);
 
     --pt1: rgba(0, 0, 0, 0.3);
@@ -240,7 +240,7 @@ button.clear, .button.clear{
 }
 
 .navbar > a:active{
-    scale:0.96;
+    background-color: var(--bg3) !important;
 }
 
 .navbar > a:hover{
@@ -643,4 +643,91 @@ input:focus{
 
 .stats > div > img{
     height:30px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.leaderboard{
+    display: flex;
+    flex-direction: column;
+    gap:5px;
+}
+
+.leaderboard > div{
+    background-color: var(--bg2);
+
+    padding: 12px 14px;
+
+    border-radius: var(--br);
+
+    font-size:17px;
+    font-weight: bold;
+
+    width: 100%;
+    box-sizing: border-box;
+    
+    color:var(--p3);
+}
+
+.leaderboard > div:nth-child(odd){
+    background-color: var(--bg3);
+}
+
+.leaderboard > div:nth-of-type(1){
+    background: linear-gradient(120deg, rgb(215, 162, 49), rgb(240, 187, 101), rgb(170, 124, 17));
+    color:rgba(0, 0, 0, 0.638);
+}
+
+.leaderboard > div:nth-of-type(2){
+    background: linear-gradient(120deg, rgb(203, 203, 203),rgb(144, 152, 159), rgb(210, 215, 225), rgb(112, 124, 131));
+    color:rgba(0, 0, 0, 0.638);
+}
+
+.leaderboard > div:nth-of-type(3){
+    background: linear-gradient(120deg, rgb(211, 108, 52), rgb(226, 168, 113), rgb(170, 91, 17));
+    color:rgba(0, 0, 0, 0.638);
+}
+
+
+
+
+
+
+
+
+
+
+.bento-grid{
+    display: grid;
+    
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-areas:
+    "box-1 box-1 box-2 box-3 box-3 box-4"
+    "box-5 box-6 box-6 box-7 box-8 box-9"
+    "box-5 box-6 box-6 box-10 box-11 box-11"
+    "box-12 box-13 box-13 box-14 box-15 box-16";
+
+    width: calc(100% - 80px);
+    box-sizing: border-box;
+
+    margin-inline:40px;
+
+    gap:10px;
+}
+
+.bento-grid > div{
+    background-color: var(--bg2);
+    padding: 20px;
+
+    border-radius: var(--br);
 }
