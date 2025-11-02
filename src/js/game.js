@@ -93,10 +93,15 @@ snap.addEventListener('click', () => {
 
     var response;
 
+    const username = localStorage.getItem('eyespy_username') || 'Guest';
+
     fetch('https://eye-spy-backend.onrender.com/processImage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: dataURL })
+        body: JSON.stringify({ 
+            image: dataURL,
+            username: username 
+        })
     })
     .then(res => {
         return res.text(); // Get the response body as text

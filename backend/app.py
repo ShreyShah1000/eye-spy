@@ -71,6 +71,7 @@ Example:
 def processImage():
     data = request.get_json()
     image_url = data.get("image")
+    username = data.get("username", "Guest")  # Get username from request
     
     if not image_url:
        return jsonify({"error": "No image received"}), 400
@@ -109,11 +110,13 @@ def processImage():
     result = output["choices"][0]["message"]["content"]
     parsed = json.loads(result)
     GAME_STATE["default"] = {
+        "username": username,  # Store username in game state
         "object": parsed["object"],
         "riddle": parsed["riddle"],
         "location_hint": parsed["location_hint"],
         "reason": parsed["reason"],
         "fact": parsed["fact"],
+        "score": 15,
         "attempt": 0
     }
     return jsonify(GAME_STATE["default"])
@@ -147,15 +150,48 @@ def game_check():
 
         if state["attempt"] == 1:
             msg = f"Nice try, but not that. Hint: it’s {state['location_hint']}."
-        else:
+            state["score"]=10
+        if state["attempt"] == 2:
             msg = f"Still not it. Stronger hint: look {state['location_hint']} and think of a {state['object'].split()[0]}."
-
+            state["score"]=5
+        else:
+            msg = f"Good effort! The object was {state['object']}"
+            state["score"] = 0
+    GAME_STATE["default"] = state
     return jsonify({
         "correct": correct,
         "attempt": state["attempt"],
         "hint_message": msg,
         "target": state["object"],
         "location_hint": state["location_hint"]
+    })
+
+@app.route("/game/check_score", methods=["GET"])
+def check_score():
+    state = GAME_STATE.get("default")
+    if not state:
+        return jsonify({"error": "no round set"}), 404
+    
+    username = state.get("username", "Guest")
+    game_score = state.get("score", 0)
+    
+    # Add game state score to user's total score in database
+    if username and username != "Guest":
+        existing = Score.query.filter_by(username=username).first()
+        
+        if existing:
+            # Add to existing score
+            existing.score += game_score
+            db.session.commit()
+        else:
+            # Create new entry
+            new_score = Score(username=username, score=game_score)
+            db.session.add(new_score)
+            db.session.commit()
+    
+    return jsonify({
+        "score": game_score,
+        "username": username
     })
 
 # Leaderboard endpoints
