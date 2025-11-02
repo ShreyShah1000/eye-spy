@@ -180,11 +180,20 @@
         </div>
     </div>
 
-    <div class="floating" id="answer-layout">
-        <div class="panel" id="answer-panel">
+    <div class="floating" id="answer-laout">
+        <div class="panel" id="answer-pnel">
             <img src="/src/media/coin.svg" alt="Image coin reward correct" class="coin">
             <h2>Correct!</h2>
+            
             <p>The answer was <b><span id="answer"></span></b>.</p>
+
+            <div class="panel">
+                <h2>Fun fact</h2>
+                <p id="fun-fact">
+                    <!-- fun fact goes here -->
+                </p>
+            </div>
+
             <p>Rounds get harder as you go on. <b>Tip: take a picture of something new for a bigger challenge!</b></p>
             <button onclick="nextRound()">Next Round <i class="material-symbols-rounded">arrow_forward</i></button>
         </div>

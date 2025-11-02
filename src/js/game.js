@@ -114,6 +114,8 @@ snap.addEventListener('click', () => {
 
                 riddle = gameData.riddle
 
+                $("#fun-fact").text(gameData.fact)
+
                 $("#death-answer").text(object)
 
                 tries = 3
@@ -159,6 +161,12 @@ function inputAnswer(){
         $("#tries").text(tries)
 
         updateCounts()
+
+        if(localStorage.getItem('points') == null){
+            localStorage.setItem('points', points)
+        }else{
+            localStorage.setItem('points', localStorage.getItem('points') + points)
+        }
 
         toggleFloating('wrong-layout', 'wrong-panel')
     }
