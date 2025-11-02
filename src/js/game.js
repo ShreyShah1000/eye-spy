@@ -18,7 +18,7 @@ var difficulty = 5
 let recognition
 let isRecording = false
 
-var voiceMode = true
+var voiceMode = false
 
 var conversation
 
@@ -40,7 +40,7 @@ function init(){
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then(stream => {
             video.srcObject = stream
-            $(".loading").hide()
+            $("#main-loader").hide()
         })
         .catch(err => console.error("Camera access denied:", err))
 
@@ -91,12 +91,17 @@ snap.addEventListener('click', () => {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
     const dataURL = canvas.toDataURL('image/jpeg') // base64 JPEG
 
-    var response;
+    if(!voiceMode)
+        $("#riddle-loading").show()
+
+    var response
+
+    var username = localStorage.getItem('username')
 
     fetch('https://eye-spy-backend.onrender.com/processImage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: dataURL })
+        body: JSON.stringify({ image: dataURL, username: username })
     })
     .then(res => {
         return res.text(); // Get the response body as text
@@ -108,7 +113,6 @@ snap.addEventListener('click', () => {
             else{
                 // The 'content' is a JSON string, so it needs to be parsed separately.
                 const gameData = JSON.parse(responseText)
-                console.log(gameData)
                 
                 object = gameData.object.replace(/_/g, " ")
 
@@ -122,6 +126,8 @@ snap.addEventListener('click', () => {
 
                 $("#camera").hide()
                 $("#game").show()
+
+                $("#riddle-loading").hide()
 
                 $("#riddle").text(riddle)
                 $("#riddle").addClass('o fast')
@@ -219,13 +225,13 @@ async function endAgent(){
 function toggleVoice(){
     toggle('voice-mode')
 
-    voiceMode = !voiceMode
     if(voiceMode){
         endAgent()
         $(".stats").show()
     }else{
         startAgent()
         $(".stats").hide()
+        $("#riddle-loading").hide()
     }
 }
 
