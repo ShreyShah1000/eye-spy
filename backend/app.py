@@ -170,13 +170,13 @@ def update_score():
     data = request.get_json()
     username = data.get("username")
     score = data.get("score")
-    
+
     if not username or score is None:
         return jsonify({"error": "username and score required"}), 400
-    
+
     # Check if user exists
     existing = Score.query.filter_by(username=username).first()
-    
+
     if existing:
         # Update score if new score is higher
         if score > existing.score:
@@ -191,6 +191,28 @@ def update_score():
         db.session.add(new_score)
         db.session.commit()
         return jsonify({"message": "New score added!", "score": new_score.to_dict()})
+
+@app.route("/stats", methods=["GET"])
+def get_stats():
+    # Total Spies: count of unique usernames
+    total_spies = db.session.query(db.func.count(db.distinct(Score.username))).scalar()
+
+    # Total Objects Spied: sum of all scores (assuming score represents objects spied)
+    total_objects = db.session.query(db.func.sum(Score.score)).scalar() or 0
+
+    # Spy of the Day: top scorer's username
+    top_score = Score.query.order_by(Score.score.desc()).first()
+    spy_of_day = top_score.username if top_score else "None"
+
+    # Find of the Day: hardcoded for now, can be made dynamic later
+    find_of_day = "Water Bottle"
+
+    return jsonify({
+        "total_objects": total_objects,
+        "total_spies": total_spies,
+        "find_of_day": find_of_day,
+        "spy_of_day": spy_of_day
+    })
 
 
 

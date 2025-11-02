@@ -91,6 +91,8 @@ snap.addEventListener('click', () => {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
     const dataURL = canvas.toDataURL('image/jpeg') // base64 JPEG
 
+    $("#riddle-loading").show()
+
     var response;
 
     fetch('https://eye-spy-backend.onrender.com/processImage', {
@@ -108,7 +110,6 @@ snap.addEventListener('click', () => {
             else{
                 // The 'content' is a JSON string, so it needs to be parsed separately.
                 const gameData = JSON.parse(responseText)
-                console.log(gameData)
                 
                 object = gameData.object.replace(/_/g, " ")
 
@@ -122,6 +123,8 @@ snap.addEventListener('click', () => {
 
                 $("#camera").hide()
                 $("#game").show()
+
+                $("#riddle-loading").hide()
 
                 $("#riddle").text(riddle)
                 $("#riddle").addClass('o fast')
@@ -192,7 +195,7 @@ function submitScore() {
     fetch('https://eye-spy-backend.onrender.com/score/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: JSON.stringify({ 
             username: username,
             score: points
         })
