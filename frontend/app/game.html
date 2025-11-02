@@ -96,8 +96,10 @@
     <div class="panel wide center glassmorphism">
         <h1>Get Ready!</h1>
 
+        <input type="text" placeholder="Your nickname" id="username">
+
         <p>When you're ready, start the game!</p>
-        <button onclick="toggleFloating('video-layout', 'video-panel'); init()">Start Game</button>
+        <button onclick="if($('#username').val() == ''){ return } toggleFloating('video-layout', 'video-panel'); init()">Start Game</button>
     </div>
 
     <div class="floating" id="video-layout">
@@ -166,10 +168,10 @@
         
                 <video id="video" autoplay muted>
                 </video>
-
-                <div class="loading" id="riddle-loading" style="display: none;"></div>
                 
                 <button id="snap"><i class="material-symbols-rounded">photo_camera</i> Capture</button>
+
+                <div class="loading" id="riddle-loading" style="display: none;"></div>
 
                 <div class="btn-group">
                     <label class="toggle">
