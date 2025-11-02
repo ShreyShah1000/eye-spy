@@ -16,6 +16,10 @@ class User(db.Model):
     username = db.Column(db.String(25), unique=True, nullable=False)
     score = db.Column(db.Integer, default=0)
 
+# Initialize database tables
+with app.app_context():
+    db.create_all()
+
 load_dotenv()
 
 API_KEY = os.getenv("OPENROUTER_API_KEY")
@@ -176,6 +180,4 @@ def check_score():
 
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(host="0.0.0.0", port=5500)
