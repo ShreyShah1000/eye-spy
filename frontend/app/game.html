@@ -41,70 +41,62 @@
 
     <div class="panel wide center">
         <h1>Get Ready!</h1>
+
         <p>When you're ready, start the game!</p>
-        <button onclick="toggleFloating('video-layout', 'video-panel')">Start Game</button>
+        <button onclick="toggleFloating('video-layout', 'video-panel'); init()">Start Game</button>
     </div>
 
     <div class="floating" id="video-layout" style="display: none;">
-        <div class="panel" id="video-panel" style="display: none;">
+        <div class="panel" id="video-panel" style="display: none;width:100%;box-sizing: border-box;height:100dvh">
             <button class="close normal" onclick="toggleFloating('video-layout', 'video-panel')"><i class="material-symbols-rounded">close</i></button>
 
-            <div class="panel" id="game">
-                <canvas id="canvas"></canvas>
-            </div>
+            <div class="list">
+                <div class="panel" id="game">
+                    <canvas id="canvas"></canvas>
 
-            <div class="panel" id="camera">
-                <div class="loading"></div>
-        
-                <video id="video" autoplay>
-                </video>
+                    <div class="holder">
+                        <div>
+                            <p id="riddle"></p>
+                        </div>
+                        <div class="btn-input">
+                            <input type="text" id="voice-input" placeholder="What am I?">
+                            <button id="mic-btn" class="clear" style="right:75px;"><i class="material-symbols-rounded">mic</i></button>
+                            <button onclick="inputAnswer(this)"><i class="material-symbols-rounded">arrow_forward</i></button>
+                        </div>
+                    </div>
+                </div>
 
-                <button id="snap"><i class="material-symbols-rounded">photo_camera</i> Capture</button>
+                <div class="panel" id="camera">
+                    <div class="loading"></div>
+            
+                    <video id="video" autoplay>
+                    </video>
+
+                    <button id="snap"><i class="material-symbols-rounded">photo_camera</i> Capture</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        const video = document.getElementById('video')
-        const canvas = document.getElementById('canvas')
-        const snap = document.getElementById('snap')
-        const ctx = canvas.getContext('2d')
+    <div class="floating" id="answer-layout">
+        <div class="panel" id="answer-panel">
+            <img src="/src/media/coin.svg" alt="Image coin reward correct" class="coin">
+            <h2>Correct!</h2>
+            <p>The answer was <b><span id="answer"></span></b>.</p>
+            <p>Rounds get harder as you go on.</p>
+            <button>Next Round <i class="material-symbols-rounded">arrow_forward</i></button>
+        </div>
+    </div>
 
-        $("#game").hide();
+    <div class="floating" id="wrong-layout">
+        <div class="panel" id="wrong-panel">
+            <img src="/src/media/incorrect.svg" alt="Image coin incorrect" class="coin">
+            <h2>Incorrect</h2>
+            <p>You still have <b><span id="tries">3</span></b> tries.</p>
+            <button>Try again <i class="material-symbols-rounded">cached</i></button>
+        </div>
+    </div>
 
-        // get webcam stream
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream
-                $(".loading").hide()
-            })
-            .catch(err => console.error("Camera access denied:", err))
-
-        // capture a frame and send to backend
-        snap.addEventListener('click', () => {
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-            const dataURL = canvas.toDataURL('image/jpeg') // base64 JPEG
-
-            var response = "hi";
-
-            // fetch('http://127.0.0.1:5500/processImage', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ image: dataURL })
-            // })
-            // .then(res => res.text())
-            // .then(text => {
-            //     var response = text
-            // })
-            // .catch(console.error)
-
-            if(response != ""){
-                $("#canvas").addClass("o");
-
-                $("#video").hide();
-                $("#game").show();
-            }
-        });
-    </script>
+    <script src="/src/js/game.js"></script>
 </body>
 </html>
