@@ -123,6 +123,24 @@ def processImage():
     }
     return jsonify(GAME_STATE["default"])
 
+@app.route("/update_score", methods=["POST"])
+def update_score():
+    data = request.get_json()
+    username = data.get("username")
+    points = data.get("score")
+        
+    if not username or points is None:
+        return jsonify({"error": "Username and score are required"}), 400
+        
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+        
+    user.score += points
+    db.session.commit()
+        
+    return jsonify({"username": user.username, "total_score": user.score})
+
 @app.route("/scores", methods=["GET"])
 def scores():
     top_users = User.query.order_by(User.score.desc()).limit(10).all()
