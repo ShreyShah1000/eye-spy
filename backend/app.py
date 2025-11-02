@@ -25,13 +25,15 @@ Step 2: Pick ONE object that:
  - can be easily described in one word (e.g., “apple”, “dog”, “car”),
  - is interesting or colorful enough for an I Spy clue.
 Step 3: Create a clever, rhyming or playful riddle that hints at the object without naming it.
+Step 4: Create an insightful, educational fact for curious young kids to learn, and if possible connect it to nature
 
 Output your answer strictly in JSON with the following format:
 {
   "object": "<chosen object>",
   "riddle": "<short, fun riddle that a player can guess>",
   "location_hint": "<chosen object's position>",
-  "reason": "<1-sentence justification for why this object was chosen>"
+  "reason": "<1-sentence justification for why this object was chosen>",
+  "fact": "<fun, educational fact related to nature if possible>
 }
 
 Example:
@@ -40,6 +42,7 @@ Example:
   "riddle": "I have two wheels but no engine roar, I wait by the tree and roll on the floor.",
   "location_hint": "bottom right",
   "reason": "The bicycle is colorful, centered, and easy for players to spot."
+  "fact": "A bicycle is a zero-emissions vehicle, which means it doesn't have a tailpipe and doesn't use gasoline or motor-oil. When you choose to ride your bike instead of taking a car, you help keep the air clean for all the birds, bees, butterflies, and trees! Since your bike is powered by your own legs, every time you pedal, you are choosing a silent, clean way to explore and protect the beautiful nature all around you."
 }
 """
 
@@ -90,6 +93,7 @@ def processImage():
         "riddle": parsed["riddle"],
         "location_hint": parsed["location_hint"],
         "reason": parsed["reason"],
+        "fact": parsed["fact"],
         "attempt": 0
     }
     return jsonify(GAME_STATE["default"])
