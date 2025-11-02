@@ -1,4 +1,4 @@
-import {Conversation} from 'https://esm.sh/@elevenlabs/client';
+import {Conversation} from 'https://esm.sh/@elevenlabs/client'
 
 const video = document.getElementById('video')
 const canvas = document.getElementById('canvas')
@@ -40,75 +40,82 @@ function init(){
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then(stream => {
             video.srcObject = stream
-            $(".loading").hide()
+            $("#main-loader").hide()
         })
         .catch(err => console.error("Camera access denied:", err))
 
         // Initialize speech recognition
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.lang = 'en-US';
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+            recognition = new SpeechRecognition()
+            recognition.continuous = false
+            recognition.interimResults = false
+            recognition.lang = 'en-US'
 
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                voiceInput.value = transcript;
-            };
+                const transcript = event.results[0][0].transcript
+                voiceInput.value = transcript
+            }
 
             recognition.onend = () => {
-                isRecording = false;
-                micBtn.innerHTML = '<i class="material-symbols-rounded">mic</i>';
-            };
+                isRecording = false
+                micBtn.innerHTML = '<i class="material-symbols-rounded">mic</i>'
+            }
 
             recognition.onerror = (event) => {
-                console.error('Speech recognition error:', event.error);
-                isRecording = false;
-                micBtn.innerHTML = '<i class="material-symbols-rounded">mic</i>';
-            };
+                console.error('Speech recognition error:', event.error)
+                isRecording = false
+                micBtn.innerHTML = '<i class="material-symbols-rounded">mic</i>'
+            }
         } else {
-            console.warn('Speech recognition not supported in this browser.');
-            micBtn.disabled = true;
+            console.warn('Speech recognition not supported in this browser.')
+            micBtn.disabled = true
         }
     }
 
     // Voice input toggle
     micBtn.addEventListener('click', () => {
-    if (!recognition) return;
+    if (!recognition) return
 
     if (isRecording) {
-        recognition.stop();
+        recognition.stop()
     } else {
-        recognition.start();
-        isRecording = true;
-        micBtn.innerHTML = '<i class="material-symbols-rounded">stop_circle</i>';
+        recognition.start()
+        isRecording = true
+        micBtn.innerHTML = '<i class="material-symbols-rounded">stop_circle</i>'
     }
-});
+})
 
 // capture a frame and send to backend
 snap.addEventListener('click', () => {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
     const dataURL = canvas.toDataURL('image/jpeg') // base64 JPEG
 
-    var response;
+    if(!voiceMode)
+        $("#riddle-loading").show()
+
+    var response
+
+    var username = $("#username").val()
+
+    localStorage.setItem('username', username)
 
     fetch('https://eye-spy-backend.onrender.com/processImage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: dataURL })
+        body: JSON.stringify({ image: dataURL, username: username })
     })
     .then(res => {
-        return res.text(); // Get the response body as text
+        return res.text() // Get the response body as text
     })
     .then(responseText => {
         if (responseText) {
             if(voiceMode)
                 startAgent()
             else{
+                console.log(responseText)
                 // The 'content' is a JSON string, so it needs to be parsed separately.
                 const gameData = JSON.parse(responseText)
-                console.log(gameData)
                 
                 object = gameData.object.replace(/_/g, " ")
 
@@ -123,6 +130,8 @@ snap.addEventListener('click', () => {
                 $("#camera").hide()
                 $("#game").show()
 
+                $("#riddle-loading").hide()
+
                 $("#riddle").text(riddle)
                 $("#riddle").addClass('o fast')
 
@@ -134,7 +143,7 @@ snap.addEventListener('click', () => {
         }
     })
     .catch(console.error)
-});
+})
 
 function inputAnswer(){
     if($("#voice-input").val() == object){
@@ -145,10 +154,7 @@ function inputAnswer(){
 
         updateCounts()
 
-        // Only submit score if not in voice mode (agent will handle it)
-        if (!voiceMode) {
-            submitScore()
-        }
+        fetch('')
 
         endAgent()
 
@@ -157,11 +163,6 @@ function inputAnswer(){
         if(tries == 1){
             toggleFloating('wrong-layout', 'wrong-panel')
             toggleFloating('dead-layout', 'dead-panel')
-
-            // Only submit final score when game ends if not in voice mode
-            if (!voiceMode) {
-                submitScore()
-            }
 
             return
         }
@@ -180,30 +181,6 @@ function inputAnswer(){
 
         toggleFloating('wrong-layout', 'wrong-panel')
     }
-}
-
-function submitScore() {
-    const username = localStorage.getItem('eyespy_username');
-    if (!username) {
-        console.log('No username found, skipping score submission');
-        return;
-    }
-
-    fetch('https://eye-spy-backend.onrender.com/score/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            username: username,
-            score: points
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        console.log('Score submitted:', data);
-    })
-    .catch(err => {
-        console.error('Error submitting score:', err);
-    });
 }
 
 function updateCounts(){
@@ -253,13 +230,13 @@ async function endAgent(){
 function toggleVoice(){
     toggle('voice-mode')
 
-    voiceMode = !voiceMode
     if(voiceMode){
         endAgent()
         $(".stats").show()
     }else{
         startAgent()
         $(".stats").hide()
+        $("#riddle-loading").hide()
     }
 }
 
@@ -270,4 +247,3 @@ window.nextRound = nextRound
 window.startAgent = startAgent
 window.endAgent = endAgent
 window.toggleVoice = toggleVoice
-window.submitScore = submitScore
