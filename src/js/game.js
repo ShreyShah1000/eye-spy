@@ -1,3 +1,5 @@
+import {Conversation} from 'https://esm.sh/@elevenlabs/client';
+
 const video = document.getElementById('video')
 const canvas = document.getElementById('canvas')
 const snap = document.getElementById('snap')
@@ -15,6 +17,10 @@ var difficulty = 5
 
 let recognition
 let isRecording = false
+
+var voiceMode = true
+
+var conversation
 
 $("#game").hide()
 
@@ -38,37 +44,37 @@ function init(){
         })
         .catch(err => console.error("Camera access denied:", err))
 
-    // Initialize speech recognition
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.lang = 'en-US';
+        // Initialize speech recognition
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
 
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            voiceInput.value = transcript;
-        };
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                voiceInput.value = transcript;
+            };
 
-        recognition.onend = () => {
-            isRecording = false;
-            micBtn.innerHTML = '<i class="material-symbols-rounded">mic</i>';
-        };
+            recognition.onend = () => {
+                isRecording = false;
+                micBtn.innerHTML = '<i class="material-symbols-rounded">mic</i>';
+            };
 
-        recognition.onerror = (event) => {
-            console.error('Speech recognition error:', event.error);
-            isRecording = false;
-            micBtn.innerHTML = '<i class="material-symbols-rounded">mic</i>';
-        };
-    } else {
-        console.warn('Speech recognition not supported in this browser.');
-        micBtn.disabled = true;
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                isRecording = false;
+                micBtn.innerHTML = '<i class="material-symbols-rounded">mic</i>';
+            };
+        } else {
+            console.warn('Speech recognition not supported in this browser.');
+            micBtn.disabled = true;
+        }
     }
-}
 
-// Voice input toggle
-micBtn.addEventListener('click', () => {
+    // Voice input toggle
+    micBtn.addEventListener('click', () => {
     if (!recognition) return;
 
     if (isRecording) {
@@ -97,27 +103,32 @@ snap.addEventListener('click', () => {
     })
     .then(responseText => {
         if (responseText) {
-            // The 'content' is a JSON string, so it needs to be parsed separately.
-            const gameData = JSON.parse(responseText)
-            console.log(gameData)
-            
-            object = gameData.object.replace(/_/g, " ")
+            if(voiceMode)
+                startAgent()
+            else{
+                // The 'content' is a JSON string, so it needs to be parsed separately.
+                const gameData = JSON.parse(responseText)
+                console.log(gameData)
+                
+                object = gameData.object.replace(/_/g, " ")
 
-            riddle = gameData.riddle
+                riddle = gameData.riddle
 
-            $("#death-answer").text(object)
+                $("#death-answer").text(object)
 
-            tries = 3
+                tries = 3
 
-            $("#camera").hide()
-            $("#game").show()
+                $("#camera").hide()
+                $("#game").show()
 
-            $("#riddle").text(riddle)
-            $("#riddle").addClass('o fast')
+                $("#riddle").text(riddle)
+                $("#riddle").addClass('o fast')
 
-            setTimeout(() => {
-                $("#riddle").removeClass('o fast')
-            }, 500)
+
+                setTimeout(() => {
+                    $("#riddle").removeClass('o fast')
+                }, 500)
+            }
         }
     })
     .catch(console.error)
@@ -131,6 +142,8 @@ function inputAnswer(){
         points += tries * difficulty
 
         updateCounts()
+
+        endAgent()
 
         toggleFloating('answer-layout', 'answer-panel')        
     }else{
@@ -177,3 +190,41 @@ function hideAll(){
     $("#dead-layout").hide()
     $("#dead-panel").hide()
 }
+
+function startAgent(){
+    if(conversation){
+        return
+    }
+
+    voiceMode = true
+    conversation = Conversation.startSession({
+        agentId: "agent_7801k90mdswcfpcsp95wskaaq3ry",
+        connectionType: "webrtc",
+    })
+}
+
+async function endAgent(){
+    voiceMode = false
+    await conversation.endSession()
+}
+
+function toggleVoice(){
+    toggle('voice-mode')
+
+    voiceMode = !voiceMode
+    if(voiceMode){
+        endAgent()
+        $(".stats").show()
+    }else{
+        startAgent()
+        $(".stats").hide()
+    }
+}
+
+window.init = init
+window.inputAnswer = inputAnswer
+window.tryAgain = tryAgain
+window.nextRound = nextRound
+window.startAgent = startAgent
+window.endAgent = endAgent
+window.toggleVoice = toggleVoice

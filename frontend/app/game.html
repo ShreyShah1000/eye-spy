@@ -96,15 +96,13 @@
     <div class="panel wide center glassmorphism">
         <h1>Get Ready!</h1>
 
-        <button id="voice-agent">Voice Agent</button>
-
         <p>When you're ready, start the game!</p>
         <button onclick="toggleFloating('video-layout', 'video-panel'); init()">Start Game</button>
     </div>
 
     <div class="floating" id="video-layout">
         <div class="panel" id="video-panel" style="width:100%;box-sizing: border-box;height:100dvh">
-            <button class="close normal" onclick="toggleFloating('video-layout', 'video-panel')"><i class="material-symbols-rounded">close</i></button>
+            <button class="close normal" onclick="toggleFloating('video-layout', 'video-panel'); endAgent()"><i class="material-symbols-rounded">close</i></button>
             
             <div class="stats">
                 <div>
@@ -134,14 +132,50 @@
             </div>
 
             <div class="panel" id="camera">
+                <div class="panel" id="voice-mode" style="display: none;border:none;">
+                    <h2>Voice Mode</h2>
+                    <p>Talk to AI about your surroundings. <b>Click "Capture" to start!</b></p>
+                    <div class="sound-waves" style="--w: var(--volume);">
+                        <i class="material-symbols-rounded">mic</i>
+                    </div>
+                    <script>
+                        navigator.mediaDevices.getUserMedia({ audio: true })
+                            .then(stream => {
+                                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                                const analyser = audioContext.createAnalyser();
+                                const microphone = audioContext.createMediaStreamSource(stream);
+                                microphone.connect(analyser);
+                                analyser.fftSize = 256;
+                                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                                function updateVolume() {
+                                    analyser.getByteFrequencyData(dataArray);
+                                    const volume = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
+                                    const normalizedVolume = Math.min(Math.max(volume / 255, 0), 1); // Normalize to 0-1
+                                    document.documentElement.style.setProperty('--volume', `${normalizedVolume * 60}px`); // Adjust scale as needed
+                                    requestAnimationFrame(updateVolume);
+                                }
+
+                                updateVolume();
+                            })
+                            .catch(err => console.error('Error accessing microphone:', err));
+                    </script>
+                </div>
+
                 <div class="loading"></div>
         
-                <video id="video" autoplay>
+                <video id="video" autoplay muted>
                 </video>
 
                 <button id="snap"><i class="material-symbols-rounded">photo_camera</i> Capture</button>
 
-                <div class="loading" id="snap-load" style="display: none;"></div>
+                <div class="btn-group">
+                    <label class="toggle">
+                        <input type="checkbox" onchange="toggleVoice()">
+                        <span class="slider"></span>
+                    </label>
+                    <label>Voice Mode</label>
+                </div>
             </div>
         </div>
     </div>
@@ -173,6 +207,28 @@
             <button onclick="window.location.reload()">Play Again</button>
             <button class="normal" onclick="window.location.reload()">Cancel</button>
         </div>
+    </div>
+
+    <div class="panel glassmorphism">
+        <h2>How to Play</h2>
+        <p>It's simple!</p>
+        <ol>
+            <li>Click start!</li>
+            <li>Take a picture of something!</li>
+            <li>Wildeyes with ask a riddle about something in that image.</li>
+            <li>Try and identify it in 3 tries!</li>
+        </ol>
+    </div>
+
+    <div class="panel glassmorphism">
+        <h2>Voice Mode</h2>
+        <p>Tired of staring at text? Leisurely talk to a human-like AI with I spy.</p>
+        <ol>
+            <li>Click start!</li>
+            <li>Take a picture of something!</li>
+            <li>Enable voice mode.</li>
+            <li>Have fun!</li>
+        </ol>
     </div>
 
     <script src="/src/js/game.js" type="module"></script>

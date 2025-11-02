@@ -69,16 +69,18 @@ h1{
     font-weight: 700;
 }
 
-h1, h2, h3, h4, h5, h, p, li, label{
+h1, h2, h3, h4, h5, h, p, li, label, ul, ol{
     margin-block:10px;
     color:var(--p1);
 }
 
-p{
+p, li{
     font-size: 17px;
     opacity: 0.8;
 
     font-family: var(--f-b);
+
+    color:var(--p1);
 }
 
 hr{
@@ -183,6 +185,8 @@ button.clear, .button.clear{
 .btn-group{
     display: flex;
     gap:5px;
+
+    align-items: center;
 }
 
 
@@ -734,4 +738,105 @@ input:focus{
     text-align: center;
 
     border-radius: var(--br);
+}
+
+
+
+
+
+
+
+
+
+
+
+.toggle {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg4);
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--bg2);
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--p2);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--p1);
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+
+
+
+
+
+
+
+.sound-waves{
+    width: 80px;
+    height: 80px;
+
+    position: relative;
+
+    background-color: var(--bg3);
+
+    border:1px solid var(--bg4);
+    border-radius: 99px;
+
+    color:var(--p1);
+
+    font-size: 40px;
+
+    cursor: pointer;
+
+    outline: var(--w) solid var(--pt1);
+    
+    opacity: 0.8;
+}
+
+.sound-waves > i{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform: translate(-50%, -50%);
+
+    pointer-events: none;
 }
