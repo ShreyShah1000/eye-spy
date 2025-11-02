@@ -31,7 +31,7 @@ function init(){
     updateCounts()
 
     // get webcam stream
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then(stream => {
             video.srcObject = stream
             $(".loading").hide()

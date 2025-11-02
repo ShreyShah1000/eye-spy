@@ -21,7 +21,7 @@
     --p3: rgb(88, 74, 103);
     --p4: rgb(223, 194, 247);
 
-    --pt1: rgba(0, 0, 0, 0.3);
+    --pt1: rgba(0, 0, 0, 0.1);
 
     --br:7px;
 
@@ -125,6 +125,8 @@ button, .button{
     background-color: var(--p1);
     color:var(--bg1);
 
+    display: inline-block;
+
     padding: 15px 18px;
     margin-block:10px;
 
@@ -144,7 +146,7 @@ button, .button{
 
     outline:0 solid transparent;
     
-    transition: var(--tr);
+    transition: var(--tr) background-color;
 }
 
 button:hover, .button:hover{
@@ -676,7 +678,7 @@ input:focus{
     width: 100%;
     box-sizing: border-box;
     
-    color:var(--p3);
+    color:var(--p2);
 }
 
 .leaderboard > div:nth-child(odd){
@@ -728,6 +730,8 @@ input:focus{
 .bento-grid > div{
     background-color: var(--bg2);
     padding: 20px;
+
+    text-align: center;
 
     border-radius: var(--br);
 }
