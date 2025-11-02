@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import requests, json, os, base64
+import requests, json, os
 from dotenv import load_dotenv
 
 app = Flask(__name__)
@@ -47,43 +47,42 @@ Example:
 @app.route("/processImage", methods=["POST"])
 def processImage():
     data = request.get_json()
-    #image_url = data.get("image")
+    image_url = data.get("image")
     
-    #if not image_url:
-     #   return jsonify({"error": "No image received"}), 400
+    if not image_url:
+       return jsonify({"error": "No image received"}), 400
 
-    # messages = [
-    #     {
-    #         "role": "user",
-    #         "content": [
-    #             # first send your text question/prompt
-    #             {"type": "text", "text": prompt},
-    #             # then the image
-    #             {"type": "image_url", "image_url": {"url": image_url}}
-    #         ]
-    #     }
-    # ]
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                # first send your text question/prompt
+                {"type": "text", "text": prompt},
+                # then the image
+                {"type": "image_url", "image_url": {"url": image_url}}
+            ]
+        }
+    ]
 
-    # payload = {
-    #     "model": MODEL,
-    #     "messages": messages,
-    #     "temperature": 0.3,
-    #     "max_tokens": 400
-    # }
+    payload = {
+        "model": MODEL,
+        "messages": messages,
+        "temperature": 0.3,
+        "max_tokens": 400
+    }
 
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
     }
 
-    #response = requests.post(URL, headers=headers, json=payload)
+    response = requests.post(URL, headers=headers, json=payload)
 
-    #if response.status_code != 200:
-     #   return jsonify({"error": "Failed to contact OpenRouter", "details": response.text}), 500
+    if response.status_code != 200:
+       return jsonify({"error": "Failed to contact OpenRouter", "details": response.text}), 500
     
-    #output = response.json()
-    #print(output)
-    output = {'id': 'gen-1762030485-5QW5870OssmkIxKfzjem', 'provider': 'Alibaba', 'model': 'qwen/qwen3-vl-8b-instruct', 'object': 'chat.completion', 'created': 1762030485, 'choices': [{'logprobs': None, 'finish_reason': 'stop', 'native_finish_reason': 'stop', 'index': 0, 'message': {'role': 'assistant', 'content': '{\n  "object": "water bottle",\n  "riddle": "I’m green with a cap, held tight in a hand, quenching thirst in this busy land.",\n  "reason": "The water bottle is distinct, colorful, and clearly visible, making it an ideal I Spy target."\n}', 'refusal': None, 'reasoning': None}}], 'system_fingerprint': None, 'usage': {'prompt_tokens': 1670, 'completion_tokens': 62, 'total_tokens': 1732}}
+    output = response.json()
+
     result = output["choices"][0]["message"]["content"]
     parsed = json.loads(result)
     GAME_STATE["default"] = {
@@ -93,9 +92,10 @@ def processImage():
         "reason": parsed["reason"],
         "attempt": 0
     }
-    print(GAME_STATE)
     return jsonify(GAME_STATE["default"])
 
+
+# For voice mode
 @app.route("/game/state", methods=["GET"])
 def game_state():
     state = GAME_STATE.get("default")
@@ -113,15 +113,14 @@ def game_check():
         return jsonify({"error": "no round"}), 404
 
     target = state["object"].lower()
-    state["attempt"] += 1  # update attempts
+    state["attempt"] += 1
 
-    # forgiving match: "cup" == "red cup"
     correct = (target in guess) or (guess in target)
 
     if correct:
         msg = f"Yes! It was the {state['object']}."
     else:
-        # escalate by attempt
+
         if state["attempt"] == 1:
             msg = f"Nice try, but not that. Hint: it’s {state['location_hint']}."
         else:
@@ -140,4 +139,4 @@ def game_check():
     
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5500)
+    app.run(host="0.0.0.0", port=5000)
