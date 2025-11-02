@@ -18,7 +18,7 @@ var difficulty = 5
 let recognition
 let isRecording = false
 
-var voiceMode = true
+var voiceMode = false
 
 var conversation
 
