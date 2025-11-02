@@ -1,13 +1,33 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 import requests, json, os
 from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)
 
+# Configure SQLite database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///eyespy.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
+# Define the Score model
+class Score(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), nullable=False)
+    score = db.Column(db.Integer, nullable=False, default=0)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'score': self.score
+        }
+
+# Create tables
+with app.app_context():
+    db.create_all()
 
 load_dotenv()
 
@@ -137,6 +157,40 @@ def game_check():
         "target": state["object"],
         "location_hint": state["location_hint"]
     })
+
+# Leaderboard endpoints
+@app.route("/leaderboard", methods=["GET"])
+def get_leaderboard():
+    # Get top 10 scores
+    scores = Score.query.order_by(Score.score.desc()).limit(10).all()
+    return jsonify([score.to_dict() for score in scores])
+
+@app.route("/score/update", methods=["POST"])
+def update_score():
+    data = request.get_json()
+    username = data.get("username")
+    score = data.get("score")
+    
+    if not username or score is None:
+        return jsonify({"error": "username and score required"}), 400
+    
+    # Check if user exists
+    existing = Score.query.filter_by(username=username).first()
+    
+    if existing:
+        # Update score if new score is higher
+        if score > existing.score:
+            existing.score = score
+            db.session.commit()
+            return jsonify({"message": "Score updated!", "score": existing.to_dict()})
+        else:
+            return jsonify({"message": "Score not higher than current best", "score": existing.to_dict()})
+    else:
+        # Create new entry
+        new_score = Score(username=username, score=score)
+        db.session.add(new_score)
+        db.session.commit()
+        return jsonify({"message": "New score added!", "score": new_score.to_dict()})
 
 
 
