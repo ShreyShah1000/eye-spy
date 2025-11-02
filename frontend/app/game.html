@@ -96,26 +96,14 @@
     <div class="panel wide center glassmorphism">
         <h1>Get Ready!</h1>
 
+        <input type="text" placeholder="Your nickname" id="username">
+
         <p>When you're ready, start the game!</p>
-        <input type="text" id="username-input" placeholder="Enter your username" style="margin-bottom: 10px; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--text);">
-        <button onclick="startGame()">Start Game</button>
+        <button onclick="if($('#username').val() == ''){ return } toggleFloating('video-layout', 'video-panel'); init()">Start Game</button>
     </div>
 
-    <script>
-        function startGame() {
-            const username = document.getElementById('username-input').value.trim();
-            if (!username) {
-                alert('Please enter a username!');
-                return;
-            }
-            localStorage.setItem('eyespy_username', username);
-            toggleFloating('video-layout', 'video-panel');
-            init();
-        }
-    </script>
-
     <div class="floating" id="video-layout">
-        <div class="panel" id="video-panel" style="width:100%;box-sizing: border-box;height:100dvh">
+        <div class="panel" id="video-panel" style="width:100%;box-sizing: border-box;max-height:100dvh;overflow-y: auto;">
             <button class="close normal" onclick="toggleFloating('video-layout', 'video-panel'); endAgent()"><i class="material-symbols-rounded">close</i></button>
             
             <div class="stats">
@@ -176,12 +164,14 @@
                     </script>
                 </div>
 
-                <div class="loading"></div>
+                <div class="loading" id="main-loader"></div>
         
                 <video id="video" autoplay muted>
                 </video>
-
+                
                 <button id="snap"><i class="material-symbols-rounded">photo_camera</i> Capture</button>
+
+                <div class="loading" id="riddle-loading" style="display: none;"></div>
 
                 <div class="btn-group">
                     <label class="toggle">
@@ -197,11 +187,11 @@
     <div class="floating" id="answer-layout">
         <div class="panel" id="answer-panel">
             <img src="/src/media/coin.svg" alt="Image coin reward correct" class="coin">
-            <h2>Correct!</h2>      
+            <h2>Correct!</h2>
             
             <p>The answer was <b><span id="answer"></span></b>.</p>
 
-            <div class="panel">
+            <div class="panel wide">
                 <h2>Fun fact</h2>
                 <p id="fun-fact">
                     <!-- fun fact goes here -->

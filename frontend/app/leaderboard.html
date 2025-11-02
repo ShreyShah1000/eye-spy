@@ -39,49 +39,21 @@
     <div class="navbar">
     </div>
 
-    <div class="panel leaderboard">
+    <div class="panel leaderboard" id="leaderboard">
         <h1>Leaderboard</h1>
         <p>Who's the best spy?</p>
-        <div id="leaderboard-list">
-            <p style="text-align: center;">Loading...</p>
-        </div>
-    </div>
-
-    <script>
-        // Fetch leaderboard data
-        fetch('https://eye-spy-backend.onrender.com/leaderboard')
-            .then(res => res.json())
+        
+        <script>
+            fetch('https://eye-spy-backend.onrender.com/scores')
+            .then(res => res.json()) // Parse the JSON response
             .then(data => {
-                const listDiv = document.getElementById('leaderboard-list');
-                listDiv.innerHTML = '';
-                
-                if (data.length === 0) {
-                    listDiv.innerHTML = '<p style="text-align: center;">No scores yet. Be the first!</p>';
-                    return;
+                console.log(data.leaderboard)
+                for(var i = 0; i < data.leaderboard.length; i++){
+                    document.getElementById('leaderboard').innerHTML += `<div><b>${i + 1}. ${data.leaderboard[i].username}</b> - ${data.leaderboard[i].score} points</div>`
                 }
-                
-                data.forEach((entry, index) => {
-                    const div = document.createElement('div');
-                    div.style.padding = '10px';
-                    div.style.marginBottom = '8px';
-                    div.style.borderRadius = '8px';
-                    div.style.background = 'rgba(255, 255, 255, 0.05)';
-                    
-                    // Add medal emoji for top 3
-                    let medal = '';
-                    if (index === 0) medal = '🥇 ';
-                    else if (index === 1) medal = '🥈 ';
-                    else if (index === 2) medal = '🥉 ';
-                    
-                    div.innerHTML = `<strong>${medal}${index + 1}. ${entry.username}</strong> - ${entry.score} points`;
-                    listDiv.appendChild(div);
-                });
             })
-            .catch(err => {
-                console.error('Error fetching leaderboard:', err);
-                document.getElementById('leaderboard-list').innerHTML = 
-                    '<p style="text-align: center; color: red;">Failed to load leaderboard</p>';
-            });
-    </script>
+            .catch(error => console.error('Error fetching scores:', error));
+        </script>
+    </div>
 </body>
 </html>

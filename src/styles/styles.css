@@ -232,6 +232,11 @@ button.clear, .button.clear{
 
     padding: 15px;
     padding-top: 70px;
+
+    background-image: url('/src/media/cactus.png');
+    background-size:230px 230px;
+    background-repeat: no-repeat;
+    background-position: bottom left;
 }
 
 .navbar > a, .top-bar > a{
@@ -339,7 +344,7 @@ button.clear, .button.clear{
 
     animation: load .5s ease-out infinite;
 
-    margin:100px;
+    margin:10px;
 
     z-index: 3;
 }
@@ -557,6 +562,8 @@ input:focus{
     border-radius: 10px;
 
     margin-top:30px;
+
+    overflow: hidden;
 }
 
 .holder > div{
@@ -624,6 +631,8 @@ input:focus{
     justify-content: right;
 
     padding: 5px 40px;
+
+    gap:20px;
 
     box-sizing: border-box;
 

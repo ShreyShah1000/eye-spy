@@ -3,29 +3,21 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 import requests, json, os
 from dotenv import load_dotenv
+import sqlite3
 
 app = Flask(__name__)
 CORS(app)
 
-# Configure SQLite database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///eyespy.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///eyespy.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-# Define the Score model
-class Score(db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), nullable=False)
-    score = db.Column(db.Integer, nullable=False, default=0)
+    username = db.Column(db.String(25), unique=True, nullable=False)
+    score = db.Column(db.Integer, default=0)
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'username': self.username,
-            'score': self.score
-        }
-
-# Create tables
+# Initialize database tables
 with app.app_context():
     db.create_all()
 
@@ -71,9 +63,21 @@ Example:
 def processImage():
     data = request.get_json()
     image_url = data.get("image")
-    
+    username = data.get("username")
+
+    # Validate required fields
     if not image_url:
-       return jsonify({"error": "No image received"}), 400
+        return jsonify({"error": "No image received"}), 400
+    
+    if not username:
+        return jsonify({"error": "Username is required"}), 400
+
+    # Create user if doesn't exist
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        new_user = User(username=username)
+        db.session.add(new_user)
+        db.session.commit()
 
     messages = [
         {
@@ -114,10 +118,16 @@ def processImage():
         "location_hint": parsed["location_hint"],
         "reason": parsed["reason"],
         "fact": parsed["fact"],
+        "username": username,
         "attempt": 0
     }
     return jsonify(GAME_STATE["default"])
 
+@app.route("/scores", methods=["GET"])
+def scores():
+    top_users = User.query.order_by(User.score.desc()).limit(10).all()
+    leaderboard = [{"username": user.username, "score": user.score} for user in top_users]
+    return jsonify({"leaderboard": leaderboard})
 
 # For voice mode
 @app.route("/game/state", methods=["GET"])
@@ -158,43 +168,26 @@ def game_check():
         "location_hint": state["location_hint"]
     })
 
-# Leaderboard endpoints
-@app.route("/leaderboard", methods=["GET"])
-def get_leaderboard():
-    # Get top 10 scores
-    scores = Score.query.order_by(Score.score.desc()).limit(10).all()
-    return jsonify([score.to_dict() for score in scores])
-
-@app.route("/score/update", methods=["POST"])
-def update_score():
-    data = request.get_json()
-    username = data.get("username")
-    score = data.get("score")
-    
-    if not username or score is None:
-        return jsonify({"error": "username and score required"}), 400
-    
-    # Check if user exists
-    existing = Score.query.filter_by(username=username).first()
-    
-    if existing:
-        # Update score if new score is higher
-        if score > existing.score:
-            existing.score = score
-            db.session.commit()
-            return jsonify({"message": "Score updated!", "score": existing.to_dict()})
-        else:
-            return jsonify({"message": "Score not higher than current best", "score": existing.to_dict()})
-    else:
-        # Create new entry
-        new_score = Score(username=username, score=score)
-        db.session.add(new_score)
+@app.route("/game/check_score", methods=["GET"])
+def check_score():
+    state = GAME_STATE.get("default")
+    user = User.query.filter_by(username=state["username"]).first()
+    if state["attempt"] == 1:
+        user.score += 15
         db.session.commit()
-        return jsonify({"message": "New score added!", "score": new_score.to_dict()})
+    elif state["attempt"] == 2:
+        user.score += 10
+        db.session.commit()
+    elif state["attempt"] == 3:
+        user.score += 5
+        db.session.commit()
 
+    msg = f"You have {user.score} points in total."
 
+    return jsonify({
+        "msg": msg
+    })
 
-    
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5500)
