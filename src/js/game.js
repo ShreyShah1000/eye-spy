@@ -154,7 +154,12 @@ function inputAnswer(){
 
         updateCounts()
 
-        fetch('')
+        fetch('https://eye-spy-backend.onrender.com/update_scores', { 
+            body: {
+                username: username,
+                score: tries * difficulty,
+            }
+        })
 
         endAgent()
 
