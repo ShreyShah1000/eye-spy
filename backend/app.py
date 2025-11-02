@@ -64,15 +64,19 @@ def processImage():
     image_url = data.get("image")
     username = data.get("username")
 
+    # Validate required fields
+    if not image_url:
+        return jsonify({"error": "No image received"}), 400
+    
+    if not username:
+        return jsonify({"error": "Username is required"}), 400
+
+    # Create user if doesn't exist
     user = User.query.filter_by(username=username).first()
     if not user:
         new_user = User(username=username)
         db.session.add(new_user)
         db.session.commit()
-
-
-    if not image_url:
-       return jsonify({"error": "No image received"}), 400
 
     messages = [
         {
