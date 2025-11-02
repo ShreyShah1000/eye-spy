@@ -87,36 +87,40 @@ snap.addEventListener('click', () => {
 
     var response;
 
-    fetch('http://127.0.0.1:5500/processImage', {
+    fetch('https://eye-spy-backend.onrender.com/processImage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: dataURL })
     })
-    .then(res => res.text())
-    .then(text => {
-        response = text
+    .then(res => {
+        return res.text(); // Get the response body as text
+    })
+    .then(responseText => {
+        if (responseText) {
+            // The 'content' is a JSON string, so it needs to be parsed separately.
+            const gameData = JSON.parse(responseText)
+            console.log(gameData)
+            
+            object = gameData.object.replace(/_/g, " ")
+
+            riddle = gameData.riddle
+
+            $("#death-answer").text(object)
+
+            tries = 3
+
+            $("#camera").hide()
+            $("#game").show()
+
+            $("#riddle").text(riddle)
+            $("#riddle").addClass('o fast')
+
+            setTimeout(() => {
+                $("#riddle").removeClass('o fast')
+            }, 500)
+        }
     })
     .catch(console.error)
-
-    if(response){
-        // The 'content' is a JSON string, so it needs to be parsed separately.
-        const gameData = JSON.parse(response.choices[0].message.content)
-        
-        object = gameData.object
-        riddle = gameData.riddle
-
-        tries = 3
-
-        $("#camera").hide()
-        $("#game").show()
-
-        $("#riddle").text(riddle)
-        $("#riddle").addClass('o fast')
-
-        setTimeout(() => {
-            $("#riddle").removeClass('o fast')
-        }, 500)
-    }
 });
 
 function inputAnswer(){
