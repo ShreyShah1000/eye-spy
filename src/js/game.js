@@ -1,4 +1,4 @@
-import {Conversation} from 'https://esm.sh/@elevenlabs/client';
+import {Conversation} from 'https://esm.sh/@elevenlabs/client'
 
 const video = document.getElementById('video')
 const canvas = document.getElementById('canvas')
@@ -46,45 +46,45 @@ function init(){
 
         // Initialize speech recognition
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.lang = 'en-US';
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+            recognition = new SpeechRecognition()
+            recognition.continuous = false
+            recognition.interimResults = false
+            recognition.lang = 'en-US'
 
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                voiceInput.value = transcript;
-            };
+                const transcript = event.results[0][0].transcript
+                voiceInput.value = transcript
+            }
 
             recognition.onend = () => {
-                isRecording = false;
-                micBtn.innerHTML = '<i class="material-symbols-rounded">mic</i>';
-            };
+                isRecording = false
+                micBtn.innerHTML = '<i class="material-symbols-rounded">mic</i>'
+            }
 
             recognition.onerror = (event) => {
-                console.error('Speech recognition error:', event.error);
-                isRecording = false;
-                micBtn.innerHTML = '<i class="material-symbols-rounded">mic</i>';
-            };
+                console.error('Speech recognition error:', event.error)
+                isRecording = false
+                micBtn.innerHTML = '<i class="material-symbols-rounded">mic</i>'
+            }
         } else {
-            console.warn('Speech recognition not supported in this browser.');
-            micBtn.disabled = true;
+            console.warn('Speech recognition not supported in this browser.')
+            micBtn.disabled = true
         }
     }
 
     // Voice input toggle
     micBtn.addEventListener('click', () => {
-    if (!recognition) return;
+    if (!recognition) return
 
     if (isRecording) {
-        recognition.stop();
+        recognition.stop()
     } else {
-        recognition.start();
-        isRecording = true;
-        micBtn.innerHTML = '<i class="material-symbols-rounded">stop_circle</i>';
+        recognition.start()
+        isRecording = true
+        micBtn.innerHTML = '<i class="material-symbols-rounded">stop_circle</i>'
     }
-});
+})
 
 // capture a frame and send to backend
 snap.addEventListener('click', () => {
@@ -96,7 +96,9 @@ snap.addEventListener('click', () => {
 
     var response
 
-    var username = localStorage.getItem('username')
+    var username = $("#username").val()
+
+    localStorage.setItem('username', username)
 
     fetch('https://eye-spy-backend.onrender.com/processImage', {
         method: 'POST',
@@ -104,13 +106,14 @@ snap.addEventListener('click', () => {
         body: JSON.stringify({ image: dataURL, username: username })
     })
     .then(res => {
-        return res.text(); // Get the response body as text
+        return res.text() // Get the response body as text
     })
     .then(responseText => {
         if (responseText) {
             if(voiceMode)
                 startAgent()
             else{
+                console.log(responseText)
                 // The 'content' is a JSON string, so it needs to be parsed separately.
                 const gameData = JSON.parse(responseText)
                 
@@ -140,7 +143,7 @@ snap.addEventListener('click', () => {
         }
     })
     .catch(console.error)
-});
+})
 
 function inputAnswer(){
     if($("#voice-input").val() == object){
@@ -150,6 +153,13 @@ function inputAnswer(){
         points += tries * difficulty
 
         updateCounts()
+
+        fetch('https://eye-spy-backend.onrender.com/update_scores', { 
+            body: {
+                username: username,
+                score: tries * difficulty,
+            }
+        })
 
         endAgent()
 
