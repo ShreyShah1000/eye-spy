@@ -1,33 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 import requests, json, os
 from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)
 
-# Configure SQLite database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///eyespy.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
-# Define the Score model
-class Score(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), nullable=False)
-    score = db.Column(db.Integer, nullable=False, default=0)
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'username': self.username,
-            'score': self.score
-        }
-
-# Create tables
-with app.app_context():
-    db.create_all()
 
 load_dotenv()
 
@@ -71,7 +51,6 @@ Example:
 def processImage():
     data = request.get_json()
     image_url = data.get("image")
-    username = data.get("username", "Guest")  # Get username from request
     
     if not image_url:
        return jsonify({"error": "No image received"}), 400
@@ -110,13 +89,11 @@ def processImage():
     result = output["choices"][0]["message"]["content"]
     parsed = json.loads(result)
     GAME_STATE["default"] = {
-        "username": username,  # Store username in game state
         "object": parsed["object"],
         "riddle": parsed["riddle"],
         "location_hint": parsed["location_hint"],
         "reason": parsed["reason"],
         "fact": parsed["fact"],
-        "score": 15,
         "attempt": 0
     }
     return jsonify(GAME_STATE["default"])
@@ -150,14 +127,9 @@ def game_check():
 
         if state["attempt"] == 1:
             msg = f"Nice try, but not that. Hint: it’s {state['location_hint']}."
-            state["score"]=10
-        if state["attempt"] == 2:
-            msg = f"Still not it. Stronger hint: look {state['location_hint']} and think of a {state['object'].split()[0]}."
-            state["score"]=5
         else:
-            msg = f"Good effort! The object was {state['object']}"
-            state["score"] = 0
-    GAME_STATE["default"] = state
+            msg = f"Still not it. Stronger hint: look {state['location_hint']} and think of a {state['object'].split()[0]}."
+
     return jsonify({
         "correct": correct,
         "attempt": state["attempt"],
@@ -165,68 +137,6 @@ def game_check():
         "target": state["object"],
         "location_hint": state["location_hint"]
     })
-
-@app.route("/game/check_score", methods=["GET"])
-def check_score():
-    state = GAME_STATE.get("default")
-    if not state:
-        return jsonify({"error": "no round set"}), 404
-    
-    username = state.get("username", "Guest")
-    game_score = state.get("score", 0)
-    
-    # Add game state score to user's total score in database
-    if username and username != "Guest":
-        existing = Score.query.filter_by(username=username).first()
-        
-        if existing:
-            # Add to existing score
-            existing.score += game_score
-            db.session.commit()
-        else:
-            # Create new entry
-            new_score = Score(username=username, score=game_score)
-            db.session.add(new_score)
-            db.session.commit()
-    
-    return jsonify({
-        "score": game_score,
-        "username": username
-    })
-
-# Leaderboard endpoints
-@app.route("/leaderboard", methods=["GET"])
-def get_leaderboard():
-    # Get top 10 scores
-    scores = Score.query.order_by(Score.score.desc()).limit(10).all()
-    return jsonify([score.to_dict() for score in scores])
-
-@app.route("/score/update", methods=["POST"])
-def update_score():
-    data = request.get_json()
-    username = data.get("username")
-    score = data.get("score")
-    
-    if not username or score is None:
-        return jsonify({"error": "username and score required"}), 400
-    
-    # Check if user exists
-    existing = Score.query.filter_by(username=username).first()
-    
-    if existing:
-        # Update score if new score is higher
-        if score > existing.score:
-            existing.score = score
-            db.session.commit()
-            return jsonify({"message": "Score updated!", "score": existing.to_dict()})
-        else:
-            return jsonify({"message": "Score not higher than current best", "score": existing.to_dict()})
-    else:
-        # Create new entry
-        new_score = Score(username=username, score=score)
-        db.session.add(new_score)
-        db.session.commit()
-        return jsonify({"message": "New score added!", "score": new_score.to_dict()})
 
 
 

@@ -97,22 +97,8 @@
         <h1>Get Ready!</h1>
 
         <p>When you're ready, start the game!</p>
-        <input type="text" id="username-input" placeholder="Enter your username" style="margin-bottom: 10px; padding: 10px; border-radius: 8px; border: 1px solid var(--bg3); background: var(--bg2); color: var(--text);">
-        <button onclick="startGame()">Start Game</button>
+        <button onclick="toggleFloating('video-layout', 'video-panel'); init()">Start Game</button>
     </div>
-
-    <script>
-        function startGame() {
-            const username = document.getElementById('username-input').value.trim();
-            if (!username) {
-                alert('Please enter a username!');
-                return;
-            }
-            localStorage.setItem('eyespy_username', username);
-            toggleFloating('video-layout', 'video-panel');
-            init();
-        }
-    </script>
 
     <div class="floating" id="video-layout">
         <div class="panel" id="video-panel" style="width:100%;box-sizing: border-box;height:100dvh">
@@ -194,10 +180,10 @@
         </div>
     </div>
 
-    <div class="floating" id="answer-layout">
-        <div class="panel" id="answer-panel">
+    <div class="floating" id="answer-laout">
+        <div class="panel" id="answer-pnel">
             <img src="/src/media/coin.svg" alt="Image coin reward correct" class="coin">
-            <h2>Correct!</h2>      
+            <h2>Correct!</h2>
             
             <p>The answer was <b><span id="answer"></span></b>.</p>
 
