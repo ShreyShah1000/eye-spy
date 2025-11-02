@@ -5,26 +5,31 @@ const ctx = canvas.getContext('2d')
 const voiceInput = document.getElementById('voice-input')
 const micBtn = document.getElementById('mic-btn')
 
-var object;
-var riddle;
+var object
+var riddle
 
-var tries;
+var tries
+var points
 
-let recognition;
-let isRecording = false;
+var difficulty = 5
 
-$("#game").hide();
+let recognition
+let isRecording = false
 
-$("#answer-layout").hide();
-$("#answer-panel").hide();
+$("#game").hide()
 
-$("#video-layout").hide();
-$("#video-panel").hide();
+hideAll()
 
-$("#wrong-layout").hide();
-$("#wrong-panel").hide();
+$("#video-layout").hide()
+$("#video-panel").hide()
 
 function init(){
+    tries = 3
+    points = 0
+    difficulty = 5
+
+    updateCounts()
+
     // get webcam stream
     navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
@@ -142,17 +147,32 @@ function inputAnswer(){
         //correct
         $("#answer").text(object)
 
-        
+        points += tries * difficulty
+
+        updateCounts()
 
         toggleFloating('answer-layout', 'answer-panel')        
     }else{
+        if(tries == 1){
+            toggleFloating('wrong-layout', 'wrong-panel')
+            toggleFloating('dead-layout', 'dead-panel')
+
+            return
+        }
+
         // incorrect
+        tries--
         $("#tries").text(tries)
 
-        tries--
+        updateCounts()
 
-        toggleFloating('wrong-layout', 'wrong-panel')        
+        toggleFloating('wrong-layout', 'wrong-panel')
     }
+}
+
+function updateCounts(){
+    $("#tries-count").text(tries)
+    $("#points-count").text(points)
 }
 
 function tryAgain(){
@@ -162,11 +182,17 @@ function tryAgain(){
 function nextRound(){
     tries = 3
 
+    hideAll()
+
+    $("#game").hide()
+    $("#camera").show()
+}
+
+function hideAll(){
     $("#answer-layout").hide()
     $("#answer-panel").hide()
     $("#wrong-layout").hide()
     $("#wrong-panel").hide()
-
-    $("#game").hide()
-    $("#camera").show()
+    $("#dead-layout").hide()
+    $("#dead-panel").hide()
 }

@@ -24,7 +24,7 @@
 
             box-shadow: 0 3px 15px var(--bg3) inset;
 
-            animation: float 10s linear forwards;
+            animation: float 5s linear forwards;
         }
 
         .dark .square{
@@ -76,7 +76,7 @@
         window.addEventListener('load', () => {
             setInterval(() => {
                 var w = Math.random() * 100
-                var x = $(".particles").append(`<div class="square" style="left:${Math.random() * 100}%; width:${w}px; height:${w}px"></div>`)
+                var x = $(".particles").append(`<div class="square" style="left:${Math.random() * 110 - 10}%; width:${w}px; height:${w}px"></div>`)
 
                 remove(x.children().last())
             }, 600)
@@ -85,7 +85,7 @@
         async function remove(x){
             setTimeout(() => {
                 x.remove()
-            }, 10000)
+            }, 5000)
         }
     </script>
     <script src="/src/js/navbar.js"></script>
@@ -103,6 +103,19 @@
     <div class="floating" id="video-layout">
         <div class="panel" id="video-panel" style="width:100%;box-sizing: border-box;height:100dvh">
             <button class="close normal" onclick="toggleFloating('video-layout', 'video-panel')"><i class="material-symbols-rounded">close</i></button>
+            
+            <div class="stats">
+                <div>
+                    <img src="/src/media/heart.svg" alt="Tries left">
+                    <p><b id="tries-count">0</b> tries</p>
+                </div>
+
+                <div>
+                    <img src="/src/media/coin.svg" alt="points count">
+                    <p><b id="points-count">300</b> points</p>
+                </div>
+            </div>
+
             <div class="panel" id="game">
                 <canvas id="canvas"></canvas>
 
@@ -134,7 +147,7 @@
             <img src="/src/media/coin.svg" alt="Image coin reward correct" class="coin">
             <h2>Correct!</h2>
             <p>The answer was <b><span id="answer"></span></b>.</p>
-            <p>Rounds get harder as you go on.</p>
+            <p>Rounds get harder as you go on. <b>Tip: take a picture of something new for a bigger challenge!</b></p>
             <button onclick="nextRound()">Next Round <i class="material-symbols-rounded">arrow_forward</i></button>
         </div>
     </div>
@@ -148,14 +161,15 @@
         </div>
     </div>
 
-    <!-- <div class="floating" id="dead-layout">
+    <div class="floating" id="dead-layout">
         <div class="panel" id="dead-panel">
-            <img src="/src/media/incorrect.svg" alt="Image icon incorrect" class="coin">
-            <h2>Incorrect</h2>
-            <p>You still have <b><span id="tries">3</span></b> tries.</p>
-            <button onclick="tryAgain()">Try again <i class="material-symbols-rounded">cached</i></button>
+            <img src="/src/media/death.svg" alt="Image icon incorrect" class="coin">
+            <h2>You Lost! 💀</h2>
+            <p>You ran out of tries! The answer was <b><span id="death-answer"></span></b></p>
+            <button onclick="window.location.reload()">Play Again</button>
+            <button class="normal" onclick="window.location.reload()">Cancel</button>
         </div>
-    </div> -->
+    </div>
 
     <script src="/src/js/game.js"></script>
 
