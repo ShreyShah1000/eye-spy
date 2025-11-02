@@ -105,7 +105,7 @@ snap.addEventListener('click', () => {
         "usage": {"prompt_tokens": 1670, "completion_tokens": 68, "total_tokens": 1738}
     };
 
-    fetch('http://127.0.0.1:5500/processImage', {
+    fetch('http://127.0.0.1:5000/processImage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: dataURL })
