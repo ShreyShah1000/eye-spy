@@ -40,7 +40,7 @@ function init(){
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then(stream => {
             video.srcObject = stream
-            $(".loading").hide()
+            $("#main-loader").hide()
         })
         .catch(err => console.error("Camera access denied:", err))
 
@@ -91,14 +91,17 @@ snap.addEventListener('click', () => {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
     const dataURL = canvas.toDataURL('image/jpeg') // base64 JPEG
 
-    $("#riddle-loading").show()
+    if(!voiceMode)
+        $("#riddle-loading").show()
 
-    var response;
+    var response
+
+    var username = localStorage.getItem('username')
 
     fetch('https://eye-spy-backend.onrender.com/processImage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: dataURL })
+        body: JSON.stringify({ image: dataURL, username: username })
     })
     .then(res => {
         return res.text(); // Get the response body as text
@@ -148,11 +151,6 @@ function inputAnswer(){
 
         updateCounts()
 
-        // Only submit score if not in voice mode (agent will handle it)
-        if (!voiceMode) {
-            submitScore()
-        }
-
         endAgent()
 
         toggleFloating('answer-layout', 'answer-panel')        
@@ -160,11 +158,6 @@ function inputAnswer(){
         if(tries == 1){
             toggleFloating('wrong-layout', 'wrong-panel')
             toggleFloating('dead-layout', 'dead-panel')
-
-            // Only submit final score when game ends if not in voice mode
-            if (!voiceMode) {
-                submitScore()
-            }
 
             return
         }
@@ -183,30 +176,6 @@ function inputAnswer(){
 
         toggleFloating('wrong-layout', 'wrong-panel')
     }
-}
-
-function submitScore() {
-    const username = localStorage.getItem('eyespy_username');
-    if (!username) {
-        console.log('No username found, skipping score submission');
-        return;
-    }
-
-    fetch('https://eye-spy-backend.onrender.com/score/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            username: username,
-            score: points
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        console.log('Score submitted:', data);
-    })
-    .catch(err => {
-        console.error('Error submitting score:', err);
-    });
 }
 
 function updateCounts(){
@@ -256,13 +225,13 @@ async function endAgent(){
 function toggleVoice(){
     toggle('voice-mode')
 
-    voiceMode = !voiceMode
     if(voiceMode){
         endAgent()
         $(".stats").show()
     }else{
         startAgent()
         $(".stats").hide()
+        $("#riddle-loading").hide()
     }
 }
 
@@ -273,4 +242,3 @@ window.nextRound = nextRound
 window.startAgent = startAgent
 window.endAgent = endAgent
 window.toggleVoice = toggleVoice
-window.submitScore = submitScore

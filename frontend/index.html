@@ -48,25 +48,5 @@
             <div style="grid-area:box-16;"><h2>Pratham Rawat</h2><p>Amazing README guy</p></div>
         </div>
     </div>
-
-    <script>
-        // Fetch stats from backend and update the bento grid
-        fetch('http://localhost:5500/stats')
-            .then(response => response.json())
-            .then(data => {
-                // Update Total Objects Spied
-                document.querySelector('[style="grid-area:box-1"]').querySelector('h2').textContent = data.total_objects;
-
-                // Update Total Spies
-                document.querySelector('[style="grid-area:box-2"]').querySelector('h2').textContent = data.total_spies;
-
-                // Update Find of the Day
-                document.querySelector('[style="grid-area:box-4"]').querySelector('h2').textContent = data.find_of_day;
-
-                // Update Spy of the Day
-                document.querySelector('[style="grid-area:box-6"]').querySelector('h2').textContent = data.spy_of_day;
-            })
-            .catch(error => console.error('Error fetching stats:', error));
-    </script>
 </body>
 </html>

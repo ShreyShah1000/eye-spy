@@ -39,45 +39,21 @@
     <div class="navbar">
     </div>
 
-    <div class="panel">
+    <div class="panel leaderboard">
         <h1>Leaderboard</h1>
         <p>Who's the best spy?</p>
-        <div id="leaderboard-list" class="leaderboard">
-            <p style="text-align: center;">Loading...</p>
-        </div>
+        <div>1. Pratham Rawat</div>
+        <div>2. Shreyshah</div>
+        <div>3. Swanik Gandhe</div>
+        <div>4. Shrey Shah</div>
+        <div>5. Henry Herman</div>
+        <div>6. Mr. Johnson</div>
+        <div>7. Significant Person</div>
+        <div>8. Idk</div>
+        <div>9. Mr. Pierce</div>
+        <div>10.</div>
+        <div>11.</div>
+        <div>12.</div>
     </div>
-
-    <script>
-        // Fetch leaderboard data
-        fetch('https://eye-spy-backend.onrender.com/leaderboard')
-            .then(res => res.json())
-            .then(data => {
-                const listDiv = document.getElementById('leaderboard-list');
-                listDiv.innerHTML = '';
-                
-                if (data.length === 0) {
-                    listDiv.innerHTML = '<p style="text-align: center;">No scores yet. Be the first!</p>';
-                    return;
-                }
-                
-                data.forEach((entry, index) => {
-                    const div = document.createElement('div');
-                    
-                    // Add medal emoji for top 3
-                    let medal = '';
-                    if (index === 0) medal = '🥇 ';
-                    else if (index === 1) medal = '🥈 ';
-                    else if (index === 2) medal = '🥉 ';
-                    
-                    div.innerHTML = `<b>${medal}${index + 1}. ${entry.username}</b> - ${entry.score} points`;
-                    listDiv.appendChild(div);
-                });
-            })
-            .catch(err => {
-                console.error('Error fetching leaderboard:', err);
-                document.getElementById('leaderboard-list').innerHTML = 
-                    '<p style="text-align: center; color: red;">Failed to load leaderboard</p>';
-            });
-    </script>
 </body>
 </html>
