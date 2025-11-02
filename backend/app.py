@@ -88,7 +88,7 @@ def processImage():
     GAME_STATE["default"] = {
         "object": parsed["object"],
         "riddle": parsed["riddle"],
-        "location_hint": "top right",
+        "location_hint": parsed["location_hint"],
         "reason": parsed["reason"],
         "attempt": 0
     }
