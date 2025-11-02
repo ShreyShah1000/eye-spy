@@ -1,13 +1,33 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 import requests, json, os
 from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)
 
+# Configure SQLite database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///eyespy.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
+# Define the Score model
+class Score(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), nullable=False)
+    score = db.Column(db.Integer, nullable=False, default=0)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'score': self.score
+        }
+
+# Create tables
+with app.app_context():
+    db.create_all()
 
 load_dotenv()
 
@@ -25,13 +45,15 @@ Step 2: Pick ONE object that:
  - can be easily described in one word (e.g., “apple”, “dog”, “car”),
  - is interesting or colorful enough for an I Spy clue.
 Step 3: Create a clever, rhyming or playful riddle that hints at the object without naming it.
+Step 4: Create an insightful, educational fact for curious young kids to learn, and if possible connect it to nature
 
 Output your answer strictly in JSON with the following format:
 {
   "object": "<chosen object>",
   "riddle": "<short, fun riddle that a player can guess>",
   "location_hint": "<chosen object's position>",
-  "reason": "<1-sentence justification for why this object was chosen>"
+  "reason": "<1-sentence justification for why this object was chosen>",
+  "fact": "<fun, educational fact related to nature if possible>
 }
 
 Example:
@@ -40,6 +62,7 @@ Example:
   "riddle": "I have two wheels but no engine roar, I wait by the tree and roll on the floor.",
   "location_hint": "bottom right",
   "reason": "The bicycle is colorful, centered, and easy for players to spot."
+  "fact": "A bicycle is a zero-emissions vehicle, which means it doesn't have a tailpipe and doesn't use gasoline or motor-oil. When you choose to ride your bike instead of taking a car, you help keep the air clean for all the birds, bees, butterflies, and trees! Since your bike is powered by your own legs, every time you pedal, you are choosing a silent, clean way to explore and protect the beautiful nature all around you."
 }
 """
 
@@ -90,6 +113,7 @@ def processImage():
         "riddle": parsed["riddle"],
         "location_hint": parsed["location_hint"],
         "reason": parsed["reason"],
+        "fact": parsed["fact"],
         "attempt": 0
     }
     return jsonify(GAME_STATE["default"])
@@ -133,6 +157,40 @@ def game_check():
         "target": state["object"],
         "location_hint": state["location_hint"]
     })
+
+# Leaderboard endpoints
+@app.route("/leaderboard", methods=["GET"])
+def get_leaderboard():
+    # Get top 10 scores
+    scores = Score.query.order_by(Score.score.desc()).limit(10).all()
+    return jsonify([score.to_dict() for score in scores])
+
+@app.route("/score/update", methods=["POST"])
+def update_score():
+    data = request.get_json()
+    username = data.get("username")
+    score = data.get("score")
+    
+    if not username or score is None:
+        return jsonify({"error": "username and score required"}), 400
+    
+    # Check if user exists
+    existing = Score.query.filter_by(username=username).first()
+    
+    if existing:
+        # Update score if new score is higher
+        if score > existing.score:
+            existing.score = score
+            db.session.commit()
+            return jsonify({"message": "Score updated!", "score": existing.to_dict()})
+        else:
+            return jsonify({"message": "Score not higher than current best", "score": existing.to_dict()})
+    else:
+        # Create new entry
+        new_score = Score(username=username, score=score)
+        db.session.add(new_score)
+        db.session.commit()
+        return jsonify({"message": "New score added!", "score": new_score.to_dict()})
 
 
 

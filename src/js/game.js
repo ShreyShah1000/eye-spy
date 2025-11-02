@@ -145,6 +145,11 @@ function inputAnswer(){
 
         updateCounts()
 
+        // Only submit score if not in voice mode (agent will handle it)
+        if (!voiceMode) {
+            submitScore()
+        }
+
         endAgent()
 
         toggleFloating('answer-layout', 'answer-panel')        
@@ -152,6 +157,11 @@ function inputAnswer(){
         if(tries == 1){
             toggleFloating('wrong-layout', 'wrong-panel')
             toggleFloating('dead-layout', 'dead-panel')
+
+            // Only submit final score when game ends if not in voice mode
+            if (!voiceMode) {
+                submitScore()
+            }
 
             return
         }
@@ -170,6 +180,30 @@ function inputAnswer(){
 
         toggleFloating('wrong-layout', 'wrong-panel')
     }
+}
+
+function submitScore() {
+    const username = localStorage.getItem('eyespy_username');
+    if (!username) {
+        console.log('No username found, skipping score submission');
+        return;
+    }
+
+    fetch('https://eye-spy-backend.onrender.com/score/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: username,
+            score: points
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log('Score submitted:', data);
+    })
+    .catch(err => {
+        console.error('Error submitting score:', err);
+    });
 }
 
 function updateCounts(){
@@ -236,3 +270,4 @@ window.nextRound = nextRound
 window.startAgent = startAgent
 window.endAgent = endAgent
 window.toggleVoice = toggleVoice
+window.submitScore = submitScore
