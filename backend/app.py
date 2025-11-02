@@ -122,20 +122,11 @@ def processImage():
     }
     return jsonify(GAME_STATE["default"])
 
-@app.route("/scores", method=["POST"])
+@app.route("/scores", methods=["GET"])
 def scores():
-    data = request.get_json()
-    username = data.get("username")
-    
-    if not username:
-        return jsonify({"error": "Username is required"}), 400
-    
-    user = User.query.filter_by(username=username).first()
-    
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-    
-    return jsonify({"username": user.username, "score": user.score})
+    top_users = User.query.order_by(User.score.desc()).limit(10).all()
+    leaderboard = [{"username": user.username, "score": user.score} for user in top_users]
+    return jsonify({"leaderboard": leaderboard})
 
 # For voice mode
 @app.route("/game/state", methods=["GET"])
