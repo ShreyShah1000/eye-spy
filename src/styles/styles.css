@@ -18,7 +18,10 @@
 
     --p1: rgb(35, 30, 77);
     --p2: rgb(67, 54, 123);
-    --p3: rgb(123, 75, 163);
+    --p3: rgb(116, 39, 180);
+    --p4: rgb(223, 194, 247);
+
+    --pt1: rgba(0, 0, 0, 0.3);
 
     --br:7px;
 
@@ -29,12 +32,33 @@
     --s: 0 0 10px rgba(0,0,0,0.2);
 }
 
+.dark{
+    --bg1: rgb(0, 0, 0);
+    --bg2: rgb(32, 32, 32);
+    --bg3: rgb(50, 50, 50);
+    --bg4: rgb(63, 63, 63);
+    --bg5: rgb(68, 68, 68);
+
+    --bgt1: rgba(0,0,0,0.9);
+    --bgt2: rgba(0,0,0,0.7);
+    --bgt3: rgba(0,0,0,0.5);
+
+    --p1: rgb(247, 247, 247);
+    --p2: rgb(225, 224, 233);
+    --p3: rgb(186, 178, 195);
+    --p3: rgb(105, 97, 114);
+
+    --pt1: rgba(255, 255, 255, 0.3);
+}
+
 body{
     font-family: var(--f-h);
 
     margin:0;
-    margin-top:40px;
+    margin-top:90px;
     margin-left:240px;
+
+    background-color: var(--bg1);
 }
 
 h1{
@@ -46,6 +70,7 @@ h1{
 
 h1, h2, h3, h4, h5, h, p, li, label{
     margin-block:10px;
+    color:var(--p1);
 }
 
 p{
@@ -116,19 +141,21 @@ button, .button{
 
     text-decoration: none;
 
-    box-shadow: 0px 3px 10px rgba(0,0,0,0.03);
+    outline:0 solid transparent;
     
     transition: var(--tr);
 }
 
 button:hover, .button:hover{
     opacity: 0.8;
-
+    
     transition: var(--tr);
 }
 
 button:active, .button:active{
     scale:0.97;
+
+    outline:6px solid var(--pt1);
 
     transition: var(--tr);
 }
@@ -144,6 +171,10 @@ button.clear, .button.clear{
     background-color: transparent;
 
     font-size:20px;
+
+    box-shadow: none;
+
+    padding:0;
 }
 
 .btn-group{
@@ -180,15 +211,16 @@ button.clear, .button.clear{
     height:100%;
     width: 200px;
 
-    z-index: 2;
+    z-index: 5;
 
     backdrop-filter: blur(10px);
     background-color: var(--bgt3);
 
     padding: 15px;
+    padding-top: 70px;
 }
 
-.navbar > a{
+.navbar > a, .top-bar > a{
     text-decoration: none;
 
     font-size:18px;
@@ -202,6 +234,10 @@ button.clear, .button.clear{
     border-radius: var(--br);
 }
 
+.dark .navbar > a, .dark .top-bar > a{
+    color:var(--p2);
+}
+
 .navbar > a:active{
     scale:0.96;
 }
@@ -211,7 +247,6 @@ button.clear, .button.clear{
  
     transition: var(--tr2) background-color;
 }
-
 
 
 
@@ -253,6 +288,16 @@ button.clear, .button.clear{
     border-radius: 14px;
 
     position: relative;
+}
+
+.glassmorphism{
+    background-color: var(--bgt3);
+
+    backdrop-filter: blur(10px);
+}
+
+.dark .panel{
+    background-color: var(--bg2);
 }
 
 .panel.center{
@@ -401,13 +446,6 @@ button.clear, .button.clear{
 }
 
 
-.list{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-
 
 
 
@@ -417,7 +455,7 @@ button.clear, .button.clear{
 
 
 input{
-    padding: 15px 18px;
+    padding: 18px 20px;
 
     font-size: 17px;
     font-family: var(--f-h);
@@ -430,9 +468,15 @@ input{
     outline:0 solid transparent;
     border:2px solid var(--bg1);
 
+    color:var(--p1);
+
     cursor: pointer;
 
     transition: var(--tr);
+}
+
+.dark input{
+    border:2px solid var(--bg4);
 }
 
 input:focus{
@@ -497,6 +541,8 @@ input:focus{
 
     border:1px solid var(--bg4);
     border-radius: 10px;
+
+    margin-top:30px;
 }
 
 .holder > div{
@@ -537,4 +583,35 @@ input:focus{
     100%{
         transform:scaleX(1) scaleZ(1);
     }
+}
+
+
+
+
+
+
+
+
+
+.top-bar{
+    position: fixed;
+    top:0;
+    right:0;
+    left:0;
+    width: 100dvw;
+    height:fit-content;
+
+    background-color: var(--bg1);
+
+    border-bottom: 1px solid var(--bg4);
+
+    display: flex;
+    align-items: center;
+    justify-content: right;
+
+    padding: 5px 40px;
+
+    box-sizing: border-box;
+
+    z-index: 2;
 }

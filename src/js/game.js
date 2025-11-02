@@ -18,6 +18,12 @@ $("#game").hide();
 $("#answer-layout").hide();
 $("#answer-panel").hide();
 
+$("#video-layout").hide();
+$("#video-panel").hide();
+
+$("#wrong-layout").hide();
+$("#wrong-panel").hide();
+
 function init(){
     // get webcam stream
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -112,12 +118,12 @@ snap.addEventListener('click', () => {
 
     if(response){
         // The 'content' is a JSON string, so it needs to be parsed separately.
-        const gameData = JSON.parse(response.choices[0].message.content);
+        const gameData = JSON.parse(response.choices[0].message.content)
         
-        object = gameData.object; // "lanyard"
-        riddle = gameData.riddle; // "I hang around necks..."
+        object = gameData.object
+        riddle = gameData.riddle
 
-        tries = 3;
+        tries = 3
 
         $("#camera").hide()
         $("#game").show()
@@ -126,21 +132,41 @@ snap.addEventListener('click', () => {
         $("#riddle").addClass('o fast')
 
         setTimeout(() => {
-            $("#riddle").removeClass('o')
+            $("#riddle").removeClass('o fast')
         }, 500)
     }
 });
 
-function inputAnswer(elem){
-    if(Math.abs($(elem).val().localeCompare(object)) < 10){
+function inputAnswer(){
+    if($("#voice-input").val() == object){
         //correct
         $("#answer").text(object)
 
-        toggleFloating('answer-layout', 'answer-video')        
+        
+
+        toggleFloating('answer-layout', 'answer-panel')        
     }else{
         // incorrect
-        $("#tries").val('')
+        $("#tries").text(tries)
 
         tries--
+
+        toggleFloating('wrong-layout', 'wrong-panel')        
     }
+}
+
+function tryAgain(){
+    toggleFloating('wrong-layout', 'wrong-panel')
+}
+
+function nextRound(){
+    tries = 3
+
+    $("#answer-layout").hide()
+    $("#answer-panel").hide()
+    $("#wrong-layout").hide()
+    $("#wrong-panel").hide()
+
+    $("#game").hide()
+    $("#camera").show()
 }
